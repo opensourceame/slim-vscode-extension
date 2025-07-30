@@ -1,0 +1,175 @@
+{
+  "scopeName": "text.slim",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#doctype"
+    },
+    {
+      "include": "#elements"
+    },
+    {
+      "include": "#ruby-code"
+    },
+    {
+      "include": "#text-content"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.slim",
+          "match": "^\\s*(\\/\\/).*$"
+        },
+        {
+          "name": "comment.block.slim",
+          "begin": "^\\s*(\\/\\/)",
+          "end": "^\\s*(\\/\\/)",
+          "patterns": [
+            {
+              "name": "comment.line.slim",
+              "match": ".*"
+            }
+          ]
+        }
+      ]
+    },
+    "doctype": {
+      "patterns": [
+        {
+          "name": "meta.doctype.slim",
+          "match": "^\\s*(doctype)\\s+(\\w+)",
+          "captures": {
+            "1": { "name": "keyword.control.doctype.slim" },
+            "2": { "name": "string.quoted.doctype.slim" }
+          }
+        }
+      ]
+    },
+    "elements": {
+      "patterns": [
+        {
+          "name": "meta.tag.slim",
+          "match": "^\\s*([a-zA-Z][a-zA-Z0-9]*)([#.][a-zA-Z][a-zA-Z0-9_-]*)*\\s*",
+          "captures": {
+            "1": { "name": "entity.name.tag.slim" },
+            "2": { "name": "entity.other.attribute-name.id.slim" }
+          }
+        },
+        {
+          "name": "meta.tag.attributes.slim",
+          "begin": "^\\s*([a-zA-Z][a-zA-Z0-9]*)\\s*\\(",
+          "end": "\\)",
+          "beginCaptures": {
+            "1": { "name": "entity.name.tag.slim" }
+          },
+          "patterns": [
+            {
+              "name": "string.quoted.double.slim",
+              "begin": "\"",
+              "end": "\"",
+              "patterns": [
+                {
+                  "name": "constant.character.escape.slim",
+                  "match": "\\\\."
+                }
+              ]
+            },
+            {
+              "name": "string.quoted.single.slim",
+              "begin": "'",
+              "end": "'",
+              "patterns": [
+                {
+                  "name": "constant.character.escape.slim",
+                  "match": "\\\\."
+                }
+              ]
+            },
+            {
+              "name": "variable.other.slim",
+              "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+            }
+          ]
+        }
+      ]
+    },
+    "ruby-code": {
+      "patterns": [
+        {
+          "name": "source.ruby.embedded.slim",
+          "begin": "^\\s*(ruby:)",
+          "end": "^\\s*(end)",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.ruby.slim" }
+          },
+          "endCaptures": {
+            "1": { "name": "keyword.control.ruby.slim" }
+          },
+          "patterns": [
+            {
+              "name": "source.ruby",
+              "match": ".*"
+            }
+          ]
+        },
+        {
+          "name": "source.ruby.embedded.slim",
+          "begin": "^\\s*(javascript:)",
+          "end": "^\\s*(end)",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.javascript.slim" }
+          },
+          "endCaptures": {
+            "1": { "name": "keyword.control.javascript.slim" }
+          },
+          "patterns": [
+            {
+              "name": "source.javascript",
+              "match": ".*"
+            }
+          ]
+        },
+        {
+          "name": "source.ruby.embedded.slim",
+          "begin": "^\\s*(css:)",
+          "end": "^\\s*(end)",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.css.slim" }
+          },
+          "endCaptures": {
+            "1": { "name": "keyword.control.css.slim" }
+          },
+          "patterns": [
+            {
+              "name": "source.css",
+              "match": ".*"
+            }
+          ]
+        },
+        {
+          "name": "source.ruby.embedded.slim",
+          "match": "^\\s*([a-zA-Z][a-zA-Z0-9]*)\\s*=\\s*(.+)$",
+          "captures": {
+            "1": { "name": "entity.name.tag.slim" },
+            "2": { "name": "source.ruby" }
+          }
+        }
+      ]
+    },
+    "text-content": {
+      "patterns": [
+        {
+          "name": "text.plain.slim",
+          "match": "^\\s*\\|\\s*(.+)$",
+          "captures": {
+            "1": { "name": "text.plain" }
+          }
+        }
+      ]
+    }
+  }
+}

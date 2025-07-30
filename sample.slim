@@ -1,0 +1,51 @@
+doctype html
+html
+  head
+    title Sample Slim Template
+    meta name="viewport" content="width=device-width, initial-scale=1"
+    css:
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+  body
+    .container
+      h1 Welcome to Slim
+      p This is a sample template demonstrating the VS Code extension features.
+
+      // This is a comment
+      / This is also a comment
+
+      #main-content
+        h2 Features
+        ul
+          li Syntax highlighting
+          li Auto-formatting
+          li Indentation support
+          li Ruby code integration
+
+        ruby:
+          users = ['Alice', 'Bob', 'Charlie']
+          users.each do |user|
+            puts "Hello, #{user}!"
+
+        javascript:
+          console.log('Hello from JavaScript!');
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded!');
+          });
+
+        p
+          | This is plain text content using the pipe syntax.
+          | It can span multiple lines.
+
+        form action="/submit" method="post"
+          input type="text" name="name" placeholder="Enter your name"
+          input type="email" name="email" placeholder="Enter your email"
+          button type="submit" Submit
