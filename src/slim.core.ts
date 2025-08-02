@@ -7,13 +7,16 @@ export class SlimNode {
     public children: SlimNode[];
     public parent: SlimNode | null;
     public content: string;
+    public rendered: string;
 
     constructor(line: string) {
         this.depth = null;
         this.indentation = this.indentationScore(line);
         this.children = [];
         this.parent = null;
-        this.content = line;
+        this.content = line.trim();
+        this.tag = this.content.split(/\s+/)[0];
+        this.rendered = "";
     }
 
     public addChild(child: SlimNode) {
@@ -28,21 +31,40 @@ export class SlimNode {
         return line.replace(/\t/g, '    ').match(/^\s*/)?.[0]?.length || 0;
     }
 
-    public render() {
+    public render(): string {
         let result = "";
 
-        if (this.depth == 0) {
-            return "";
+        // Only render content for non-root nodes
+        if (this.depth > -1) {
+            result = this.whitespace() + this.content + "\n";
         }
 
-        return ("  ".repeat(this.depth)) + this.content + "\n";
+        for (const child of this.children) {
+            result += child.render();
+        }
+
+        return result;
+    }
+
+    public tree() {
+        console.log(this.tag);
+        for (const child of this.children) {
+            child.tree();
+        }
+    }
+
+    private whitespace() {
+        if (this.depth < 1) {
+            return "";
+        }
+        return "  ".repeat(this.depth);
     }
 }
 
 export class SlimRootNode extends SlimNode {
     constructor() {
         super("");
-        this.depth = 0;
+        this.depth = -1;
         this.indentation = 0;
         this.tag = "root";
     }
@@ -57,7 +79,11 @@ export class SlimTemplateCore {
     }
 
     public render(): string {
-        return this.renderNode(this.root);
+        return this.root.render();
+    }
+
+    public tree() {
+        this.root.tree();
     }
 
     private renderNode(node: SlimNode): string {
@@ -65,7 +91,7 @@ export class SlimTemplateCore {
 
         // Render this node
         if (node.depth > 0) {
-            result += node.content + "\n";
+            result += " ".repeat(node.depth) + node.content + "\n";
         }
 
         // Render all children

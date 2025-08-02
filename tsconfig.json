@@ -20,13 +20,14 @@
     }
   },
   "include": [
-    "src/**/*",
-    "test/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
     "out",
-    ".vscode-test"
+    ".vscode-test",
+    "backup",
+    "test-minimal.ts"
   ],
   "ts-node": {
     "transpileOnly": true,
