@@ -1,13 +1,23 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "target": "ES2020",
-    "outDir": "out",
-    "lib": [
-      "ES2020"
-    ],
-    "sourceMap": true,
-    "strict": true
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "sourceMap": false,
+    "outDir": "./out",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["*"]
+    }
   },
   "include": [
     "src/**/*",
@@ -15,6 +25,14 @@
   ],
   "exclude": [
     "node_modules",
+    "out",
     ".vscode-test"
-  ]
+  ],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
 }

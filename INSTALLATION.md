@@ -1,119 +1,117 @@
-# Slim VSCode Extension Installation Guide
+# Slim VS Code Extension Installation
 
-## Quick Installation
+## Testing the Extension
 
-1. **Build and Package the Extension:**
+The extension has been successfully compiled and packaged. Here's how to test it:
+
+### Option 1: Install via VSIX file (Recommended)
+
+1. **Open VS Code**
+2. **Install the extension:**
+   - Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
+   - Type "Extensions: Install from VSIX..."
+   - Select the `slim-vscode-extension-1.0.0.vsix` file
+   - Click "Install"
+
+3. **Test the extension:**
+   - Create a new file with `.slim` extension
+   - Add some Slim template content:
+   ```slim
+   doctype html
+   html
+     head
+       title My Site
+     body
+       h1 Hello World
+   ```
+   - Press `Ctrl+Shift+P` and run "Format Document"
+   - The document should be formatted with proper indentation
+
+### Option 2: Development Mode
+
+1. **Clone and setup:**
    ```bash
+   git clone <repository-url>
    cd slim-vscode-extension
-   ./install.sh
+   npm install
+   npm run compile
    ```
 
-2. **Install in VS Code:**
-   - Open VS Code
-   - Go to Extensions (Ctrl+Shift+X)
-   - Click the '...' menu and select 'Install from VSIX...'
-   - Select the generated `slim-vscode-extension-1.0.0.vsix` file
-
-   Or use the command line:
+2. **Open in VS Code:**
    ```bash
-   code --install-extension slim-vscode-extension-1.0.0.vsix
+   code .
    ```
 
-## Features
+3. **Press F5** to launch a new VS Code window with the extension loaded
 
-### ✅ Syntax Highlighting
-- HTML elements and tags
-- ID (#) and class (.) selectors
-- Ruby code blocks
-- Comments (// and /)
-- Text content with pipe (|) syntax
-- Doctype declarations
+4. **Test formatting:**
+   - Open any `.slim` file
+   - Use "Format Document" command
 
-### ✅ Formatting
-- Auto-indentation
-- Configurable indentation (spaces/tabs)
-- Format on save
-- Range formatting
-- On-type formatting
+## Extension Features
 
-### ✅ Configuration Options
-```json
-{
-  "slim.indentSize": 2,        // Number of spaces for indentation
-  "slim.useTab": false,        // Use tabs instead of spaces
-  "slim.formatOnSave": true    // Format files automatically on save
-}
+- ✅ **Syntax highlighting** for `.slim` files
+- ✅ **Document formatting** with configurable indentation
+- ✅ **Standalone CLI tool** for command-line processing
+- ✅ **Clean architecture** with separable core and VS Code wrapper
+
+## Configuration
+
+The extension supports the following settings:
+
+- `slim.indentSize`: Number of spaces for indentation (default: 2)
+- `slim.useTab`: Use tabs instead of spaces (default: false)
+- `slim.formatOnSave`: Format files automatically on save (default: true)
+
+## Standalone Usage
+
+The core functionality can be used independently:
+
+```typescript
+import { SlimTemplateCore } from './src/slim.core';
+
+// From file
+const template = SlimTemplateCore.fromFile('template.slim');
+console.log(template.render());
+
+// From string
+const template2 = new SlimTemplateCore('doctype html\nhtml\n  head\n    title Test');
+console.log(template2.render());
 ```
 
-## Usage
+## CLI Tool
 
-### Formatting Commands
-- `Format Document` (Shift+Alt+F): Format the entire document
-- `Format Selection` (Ctrl+K Ctrl+F): Format selected text
-- Auto-format on save (if enabled)
+Use the command-line tool for batch processing:
 
-### Sample Slim Template
-```slim
-doctype html
-html
-  head
-    title My Page
-    css:
-      body { margin: 0; }
-
-  body
-    h1 Hello World
-    p This is a paragraph
-    | This is plain text
-
-    ruby:
-      users.each do |user|
-        puts user.name
-```
-
-## Development
-
-### Building from Source
 ```bash
-npm install
-npm run compile
+npx ts-node src/cli.ts input.slim
+npx ts-node src/cli.ts input.slim output.html
 ```
-
-### Running in Development Mode
-1. Open the extension folder in VS Code
-2. Press F5 to launch a new VS Code window with the extension
-3. Open a `.slim` file to test the extension
-
-### Testing
-- Open the `sample.slim` file to see syntax highlighting
-- Try formatting the document (Shift+Alt+F)
-- Test auto-indentation by pressing Enter
 
 ## Troubleshooting
 
-### Extension Not Working
-1. Make sure the extension is installed and enabled
-2. Check that you're opening `.slim` files
-3. Restart VS Code if needed
+If you encounter issues:
 
-### Formatting Issues
-1. Check your VS Code settings for Slim configuration
-2. Ensure the file has a `.slim` extension
-3. Try manually formatting with Shift+Alt+F
+1. **Check the extension is loaded:**
+   - Open Command Palette (`Ctrl+Shift+P`)
+   - Type "Developer: Show Running Extensions"
+   - Look for "Slim Language Support"
 
-### Syntax Highlighting Issues
-1. Verify the file extension is `.slim`
-2. Check if the language mode is set to "Slim"
-3. Restart VS Code if highlighting doesn't appear
+2. **Check syntax highlighting:**
+   - Open a `.slim` file
+   - Verify syntax colors are applied
 
-## Uninstalling
+3. **Test formatting:**
+   - Use "Format Document" command
+   - Check if indentation is applied correctly
 
-To uninstall the extension:
-1. Go to Extensions (Ctrl+Shift+X)
-2. Find "Slim Language Support"
-3. Click the gear icon and select "Uninstall"
+## Architecture
 
-Or use the command line:
-```bash
-code --uninstall-extension slim-support.slim-vscode-extension
-```
+The extension uses a clean architecture:
+
+- **`src/slim.core.ts`**: Standalone core library (no VS Code dependencies)
+- **`src/slim.template.ts`**: VS Code wrapper
+- **`src/extension.ts`**: VS Code extension entry point
+- **`src/cli.ts`**: Command-line interface
+
+This design allows the core functionality to be used in other contexts while maintaining full VS Code integration.
