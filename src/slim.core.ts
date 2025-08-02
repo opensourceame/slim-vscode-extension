@@ -65,7 +65,7 @@ export class SlimTemplateCore {
 
         // Render this node
         if (node.depth > 0) {
-            result += node.content + "\n";
+            result += "  ".repeat(node.depth) + node.content + "\n";
         }
 
         // Render all children

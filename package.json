@@ -1,7 +1,7 @@
 {
   "name": "slim-vscode-extension",
-  "displayName": "Slim Language Support",
-  "description": "Syntax highlighting and formatting for Slim templates",
+  "displayName": "Slim/Trim Language Support",
+  "description": "Syntax highlighting and formatting for Slim and Trim templates",
   "version": "1.0.0",
   "publisher": "slim-support",
   "engines": {
@@ -13,6 +13,7 @@
   ],
   "keywords": [
     "slim",
+    "trim",
     "template",
     "ruby",
     "rails",
@@ -20,7 +21,11 @@
     "formatting"
   ],
   "activationEvents": [
-    "onLanguage:slim"
+    "onLanguage:slim",
+    "onCommand:slim.testFormatter",
+    "onCommand:slim.checkFormatters",
+    "onCommand:slim.forceFormat",
+    "onCommand:slim.debugWorkspace"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -32,7 +37,8 @@
           "slim"
         ],
         "extensions": [
-          ".slim"
+          ".slim",
+          ".trim"
         ],
         "configuration": "./language-configuration.json"
       }
@@ -44,6 +50,48 @@
         "path": "./syntaxes/slim.tmLanguage.json"
       }
     ],
+    "commands": [
+      {
+        "command": "slim.testFormatter",
+        "title": "Slim: Test Formatter",
+        "category": "Slim"
+      },
+      {
+        "command": "slim.checkFormatters",
+        "title": "Slim: Check Available Formatters",
+        "category": "Slim"
+      },
+      {
+        "command": "slim.forceFormat",
+        "title": "Slim: Force Format Document",
+        "category": "Slim"
+      },
+      {
+        "command": "slim.debugWorkspace",
+        "title": "Slim: Debug Workspace",
+        "category": "Slim"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "slim.testFormatter",
+          "when": "editorLangId == slim"
+        },
+        {
+          "command": "slim.checkFormatters",
+          "when": "editorLangId == slim"
+        },
+        {
+          "command": "slim.forceFormat",
+          "when": "editorLangId == slim"
+        },
+        {
+          "command": "slim.debugWorkspace",
+          "when": "editorLangId == slim"
+        }
+      ]
+    },
     "configuration": {
       "title": "Slim",
       "properties": {

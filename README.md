@@ -1,6 +1,6 @@
-# Slim Language Support for VS Code
+# Slim/Trim Language Support for VS Code
 
-A comprehensive VS Code extension that provides both syntax highlighting and formatting for Slim templates.
+A comprehensive VS Code extension that provides both syntax highlighting and formatting for Slim and Trim templates.
 
 ## Features
 
@@ -72,6 +72,7 @@ html
 
 ## Supported File Types
 - `.slim` files
+- `.trim` files
 
 ## Requirements
 - VS Code 1.60.0 or higher
@@ -92,7 +93,8 @@ MIT License - see LICENSE file for details.
 
 ### 1.0.0
 - Initial release
-- Syntax highlighting for Slim templates
+- Syntax highlighting for Slim and Trim templates
 - Document and range formatting
 - Auto-indentation support
 - Configurable formatting options
+- Support for both .slim and .trim file extensions
