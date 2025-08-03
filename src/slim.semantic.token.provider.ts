@@ -18,19 +18,22 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
         for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
             const line = lines[lineIndex];
             const ranges = new SlimNode(line).ranges();
-            console.log(line);
+
+            console.log(lineIndex + ': ' + line);
             console.log(ranges);
             ranges.forEach(range => {
                 // Map range types to semantic token types
                 const tokenType = this.mapRangeTypeToTokenType(range.type);
+                const tokenTypeIndex = this.legend.tokenTypes.indexOf(tokenType);
 
-                tokensBuilder.push(
-                    new vscode.Range(
-                        new vscode.Position(lineIndex, range.start),
-                        new vscode.Position(lineIndex, range.end)
-                    ),
-                    tokenType
-                );
+                if (tokenTypeIndex >= 0) {
+                    tokensBuilder.push(
+                        lineIndex,
+                        range.start,
+                        range.end - range.start,
+                        tokenTypeIndex
+                    );
+                }
             });
         }
 

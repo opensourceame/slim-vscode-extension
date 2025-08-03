@@ -5,7 +5,10 @@
       "include": "#comments"
     },
     {
-      "include": "#doctype"
+      "include": "#major"
+    },
+    {
+      "include": "#layout"
     },
     {
       "include": "#elements"
@@ -37,14 +40,32 @@
         }
       ]
     },
-    "doctype": {
+    "major": {
       "patterns": [
         {
           "name": "meta.doctype.slim",
-          "match": "^\\s*(doctype)\\s+(\\w+)",
+          "match": "^\\s*(doctype|html|head|body)\\s+(\\w+)",
           "captures": {
             "1": { "name": "keyword.control.doctype.slim" },
             "2": { "name": "string.quoted.doctype.slim" }
+          }
+        },
+        {
+          "name": "meta.doctype.slim",
+          "match": "^\\s*(html|head|body)\\s*$",
+          "captures": {
+            "1": { "name": "keyword.control.doctype.slim" }
+          }
+        }
+      ]
+    },
+    "layout": {
+      "patterns": [
+        {
+          "name": "meta.structure.slim",
+          "match": "^\\s*(header|footer|main|aside|section|article|nav)\\s*$",
+          "captures": {
+            "1": { "name": "entity.name.tag.structure.slim" }
           }
         }
       ]

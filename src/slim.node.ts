@@ -35,6 +35,7 @@ export class SlimNode {
 
     public ranges() {
         const ranges: Array<{type: string, start: number, end: number, text: string}> = [];
+        const indent = this.content.match(/^\s*/)?.[0]?.length || 0;
         const line = this.content.trim();
         let currentIndex = 0;
 
@@ -48,13 +49,13 @@ export class SlimNode {
 
             // Handle ID (starts with #)
             if (char === '#') {
-                const start = currentIndex - 1;
+                const start = currentIndex;
                 let end = start + 1;
                 while (end < line.length && /[a-zA-Z0-9_-]/.test(line[end])) {
                     end++;
                 }
                 ranges.push({
-                    type: "namespace",
+                    type: "id",
                     start,
                     end,
                     text: line.substring(start, end)
@@ -92,7 +93,6 @@ export class SlimNode {
                     end++;
                 }
 
-                const attributeText = line.substring(start + 1, end - 1);
                 ranges.push({
                     type: "attribute",
                     start,
@@ -172,7 +172,6 @@ export class SlimNode {
                     }
                 } else {
                     // Check if this looks like a tag (only at the very beginning of the line)
-                    // or if it's just text content
                     const isAtVeryStart = start === 0;
                     const isLikelyTag = isAtVeryStart && /^[a-zA-Z][a-zA-Z0-9]*$/.test(word);
 
@@ -183,39 +182,38 @@ export class SlimNode {
                             end,
                             text: line.substring(start, end)
                         });
-                    } else {
-                        ranges.push({
-                            type: "text",
-                            start,
-                            end,
-                            text: line.substring(start, end)
-                        });
+                        currentIndex = end;
+                        continue;
                     }
-                    currentIndex = end;
-                    continue;
                 }
             }
 
-            // Handle text content (everything else)
+            // Handle text content - everything from current position to end of line
             if (!/\s/.test(char)) {
                 const start = currentIndex;
-                let end = start;
-                while (end < line.length && !/\s/.test(line[end])) {
-                    end++;
+                const end = line.length;
+                const textContent = line.substring(start, end).trim();
+
+                if (textContent.length > 0) {
+                    ranges.push({
+                        type: "text",
+                        start,
+                        end,
+                        text: textContent
+                    });
                 }
-                ranges.push({
-                    type: "text",
-                    start,
-                    end,
-                    text: line.substring(start, end)
-                });
-                currentIndex = end;
-                continue;
+                break; // Exit the loop since we've processed the rest of the line
             }
 
             // Skip whitespace
             currentIndex++;
         }
+
+        // add the indentation to the ranges
+        ranges.forEach(range => {
+            range.start += indent;
+            range.end   += indent;
+        });
 
         return ranges;
     }

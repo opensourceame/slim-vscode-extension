@@ -22,8 +22,7 @@ function testRanges() {
         { type: "boolean-attribute", start: 26, end: 34, text: "disabled" },
         { type: "attribute-name", start: 35, end: 46, text: "data-target" },
         { type: "attribute-value", start: 47, end: 52, text: "\"form\"" },
-        { type: "text", start: 53, end: 57, text: "save" },
-        { type: "text", start: 58, end: 65, text: "changes" }
+        { type: "text", start: 53, end: 65, text: "save changes" }
     ];
 
     console.log('\nExpected ranges:');
@@ -60,5 +59,45 @@ function testRanges() {
     console.log('Has attribute value "\"form\"":', hasAttributeValue ? '✅' : '❌');
 }
 
-// Run the test
+function testSimpleTextRanges() {
+    console.log('\n=== Testing simple text ranges ===\n');
+
+    // Test case: "p This is a simple website."
+    const testLine = "p This is a simple website.";
+    const node = new SlimNode(testLine);
+    const parsedRanges = node.ranges();
+
+    console.log('Input line:', testLine);
+    console.log('\nParsed ranges:');
+    console.log(JSON.stringify(parsedRanges, null, 2));
+
+    // Expected ranges: just two - tag and text
+    const expectedRanges = [
+        { type: "tag", start: 0, end: 1, text: "p" },
+        { type: "text", start: 2, end: 27, text: "This is a simple website." }
+    ];
+
+    console.log('\nExpected ranges:');
+    console.log(JSON.stringify(expectedRanges, null, 2));
+
+    console.log('\nValidation:');
+    console.log('Number of ranges found:', parsedRanges.length);
+    console.log('Number of expected ranges:', expectedRanges.length);
+
+    if (parsedRanges.length === expectedRanges.length) {
+        console.log('✅ Range count matches');
+    } else {
+        console.log('❌ Range count mismatch');
+    }
+
+    // Check for correct ranges
+    const hasTag = parsedRanges.some(r => r.type === "tag" && r.text === "p");
+    const hasText = parsedRanges.some(r => r.type === "text" && r.text === "This is a simple website.");
+
+    console.log('Has tag "p":', hasTag ? '✅' : '❌');
+    console.log('Has text "This is a simple website.":', hasText ? '✅' : '❌');
+}
+
+// Run the tests
 testRanges();
+testSimpleTextRanges();
