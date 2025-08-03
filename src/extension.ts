@@ -1,5 +1,3 @@
-import { config } from 'chai';
-import { ChildProcess } from 'child_process';
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
