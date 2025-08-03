@@ -2,7 +2,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { SlimTemplateCore } from './slim.core';
+import { SlimTemplate } from './slim.core';
 
 function printUsage() {
     console.log(`
@@ -36,7 +36,7 @@ function main() {
     }
 
     try {
-        const template = SlimTemplateCore.fromFile(inputFile);
+        const template = SlimTemplate.fromFile(inputFile);
         const rendered = template.render();
 
         if (outputFile) {

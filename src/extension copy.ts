@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { SlimTemplate } from './slim.template';
+import { SlimTemplateVSC } from './slim.template';
 
 export function activate(context: vscode.ExtensionContext) {
     try {
@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
                         console.log('Original text length:', originalText.length);
                         console.log('Original text preview:', originalText.substring(0, 200));
 
-                        const template = new SlimTemplate(document);
+                        const template = new SlimTemplateVSC(document);
                         template.indentSize = indentSize;
                         const rendered = template.render();
 
@@ -87,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
                         console.log('Original text length:', originalText.length);
                         console.log('Original text preview:', originalText.substring(0, 200));
 
-                        const template = new SlimTemplate(document);
+                        const template = new SlimTemplateVSC(document);
                         template.indentSize = indentSize;
                         const rendered = template.render();
 
@@ -145,7 +145,7 @@ export function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(trimRangeFormatter);
 
         // Register a command to test the formatter
-        const testCommand = vscode.commands.registerCommand('slim.testFormatter', () => {
+        const teSlimTemplateommand = vscode.commands.registerCommand('slim.testFormatter', () => {
             const editor = vscode.window.activeTextEditor;
             if (editor && (editor.document.languageId === 'slim' || editor.document.fileName.endsWith('.trim'))) {
                 console.log('Testing formatter manually...');
@@ -155,7 +155,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
         });
 
-        context.subscriptions.push(testCommand);
+        context.subscriptions.push(teSlimTemplateommand);
 
         // Register a command to check what formatters are available
         const checkFormattersCommand = vscode.commands.registerCommand('slim.checkFormatters', () => {
@@ -178,7 +178,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                 try {
                     const indentSize = getSlimConfiguration('indentSize', 2);
-                    const template = new SlimTemplate(editor.document);
+                    const template = new SlimTemplateVSC(editor.document);
                     template.indentSize = indentSize;
                     const rendered = template.render();
 

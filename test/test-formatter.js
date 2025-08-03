@@ -1,10 +1,10 @@
 // Test the formatter logic
-const { SlimTemplateCore } = require('./out/src/slim.core');
+const { SlimTemplate } = require('./out/src/slim.core');
 
 console.log('Testing formatter logic...');
 
 // Test content with proper indentation
-const testContent = `doctype html
+const teSlimTemplateontent = `doctype html
 html
   head
     title My Website
@@ -17,11 +17,11 @@ html
       li Item 3`;
 
 console.log('Original content:');
-console.log(testContent);
+console.log(teSlimTemplateontent);
 console.log('---');
 
 // Test the formatter
-const template = new SlimTemplateCore(testContent);
+const template = new SlimTemplate(teSlimTemplateontent);
 template.indentSize = 2;
 
 // Debug the node structure

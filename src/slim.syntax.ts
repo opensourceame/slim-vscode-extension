@@ -21,9 +21,9 @@ export class SlimSyntaxHighlighter {
         this.currentPos = 0;
     }
 
-        /**
-     * Main parsing method
-     */
+    /**
+ * Main parsing method
+ */
     private parse(line: string): vscode.TextEdit[] {
         // Skip empty lines and comments
         if (!line.trim() || line.trim().startsWith('//')) {
@@ -53,10 +53,11 @@ export class SlimSyntaxHighlighter {
         return this.edits;
     }
 
+
     /**
      * Parse line into components: [tag name][tag attributes][html attributes][text]
      */
-    private parseLineComponents(line: string): {
+    public parseLineComponents(line: string): {
         tagName: string;
         tagStart: number;
         tagAttributes: string;
@@ -99,46 +100,46 @@ export class SlimSyntaxHighlighter {
                 inQuotes = false;
             }
 
-                    // If we find a space and we're not in quotes, check if next char is a letter (HTML attribute)
-        if (char === ' ' && !inQuotes && i + 1 < remaining.length) {
-            const nextChar = remaining[i + 1];
-            if (nextChar.match(/[a-zA-Z]/) && !nextChar.match(/[#\.]/)) {
-                // This is the start of HTML attributes
-                result.tagAttributes = remaining.substring(0, i).trim();
-                result.htmlAttributes = remaining.substring(i + 1).trim();
-                return result;
+            // If we find a space and we're not in quotes, check if next char is a letter (HTML attribute)
+            if (char === ' ' && !inQuotes && i + 1 < remaining.length) {
+                const nextChar = remaining[i + 1];
+                if (nextChar.match(/[a-zA-Z]/) && !nextChar.match(/[#\.]/)) {
+                    // This is the start of HTML attributes
+                    result.tagAttributes = remaining.substring(0, i).trim();
+                    result.htmlAttributes = remaining.substring(i + 1).trim();
+                    return result;
+                }
             }
-        }
 
-        // If we find an equals sign and we're not in quotes, this is likely an HTML attribute
-        if (char === '=' && !inQuotes) {
-            // Look backwards to see if this is part of an HTML attribute
-            let j = i - 1;
-            while (j >= 0 && remaining[j].match(/[a-zA-Z0-9_-]/)) {
-                j--;
+            // If we find an equals sign and we're not in quotes, this is likely an HTML attribute
+            if (char === '=' && !inQuotes) {
+                // Look backwards to see if this is part of an HTML attribute
+                let j = i - 1;
+                while (j >= 0 && remaining[j].match(/[a-zA-Z0-9_-]/)) {
+                    j--;
+                }
+                if (j >= 0 && remaining[j] === ' ') {
+                    // This is an HTML attribute, everything before the space is tag attributes
+                    result.tagAttributes = remaining.substring(0, j).trim();
+                    result.htmlAttributes = remaining.substring(j + 1).trim();
+                    return result;
+                }
             }
-            if (j >= 0 && remaining[j] === ' ') {
-                // This is an HTML attribute, everything before the space is tag attributes
-                result.tagAttributes = remaining.substring(0, j).trim();
-                result.htmlAttributes = remaining.substring(j + 1).trim();
-                return result;
-            }
-        }
 
-        // If we find an equals sign and we're not in quotes, and there's no space before it,
-        // this is likely an HTML attribute at the start
-        if (char === '=' && !inQuotes && i > 0) {
-            let j = i - 1;
-            while (j >= 0 && remaining[j].match(/[a-zA-Z0-9_-]/)) {
-                j--;
+            // If we find an equals sign and we're not in quotes, and there's no space before it,
+            // this is likely an HTML attribute at the start
+            if (char === '=' && !inQuotes && i > 0) {
+                let j = i - 1;
+                while (j >= 0 && remaining[j].match(/[a-zA-Z0-9_-]/)) {
+                    j--;
+                }
+                if (j < 0) {
+                    // This is an HTML attribute at the start, no tag attributes
+                    result.tagAttributes = '';
+                    result.htmlAttributes = remaining.trim();
+                    return result;
+                }
             }
-            if (j < 0) {
-                // This is an HTML attribute at the start, no tag attributes
-                result.tagAttributes = '';
-                result.htmlAttributes = remaining.trim();
-                return result;
-            }
-        }
         }
 
         // If we get here, everything after tag name is tag attributes

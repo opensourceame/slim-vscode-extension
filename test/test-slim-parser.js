@@ -109,7 +109,7 @@ function testLineParsing(line, expected) {
     console.log('');
 }
 
-const testCases = [
+const teSlimTemplateases = [
     {
         line: 'div',
         expected: { tagName: 'div', tagAttributes: '', htmlAttributes: '' }
@@ -162,9 +162,9 @@ const testCases = [
 
 console.log('Testing SlimSyntaxHighlighter line parsing...\n');
 
-testCases.forEach((testCase, index) => {
+teSlimTemplateases.forEach((teSlimTemplatease, index) => {
     console.log(`Test ${index + 1}:`);
-    testLineParsing(testCase.line, testCase.expected);
+    testLineParsing(teSlimTemplatease.line, teSlimTemplatease.expected);
 });
 
 console.log('✅ Line parsing tests completed!');

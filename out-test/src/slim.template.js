@@ -1,4 +1,4 @@
-class SlimTemplate {
+class SlimTemplateVSC {
     constructor() {
         this.indentSize = 2;
     }

@@ -68,14 +68,14 @@ The extension supports the following settings:
 The core functionality can be used independently:
 
 ```typescript
-import { SlimTemplateCore } from './src/slim.core';
+import { SlimTemplate } from './src/slim.core';
 
 // From file
-const template = SlimTemplateCore.fromFile('template.slim');
+const template = SlimTemplate.fromFile('template.slim');
 console.log(template.render());
 
 // From string
-const template2 = new SlimTemplateCore('doctype html\nhtml\n  head\n    title Test');
+const template2 = new SlimTemplate('doctype html\nhtml\n  head\n    title Test');
 console.log(template2.render());
 ```
 

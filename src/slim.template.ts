@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
-import { SlimTemplateCore } from './slim.core';
+import { SlimTemplate } from './slim.core';
 
-export class SlimTemplate extends SlimTemplateCore {
+export class SlimTemplateVSC extends SlimTemplate {
     constructor(document: vscode.TextDocument) {
         super(document.getText());
     }
 
-    public static fromDocument(document: vscode.TextDocument): SlimTemplate {
-        return new SlimTemplate(document);
+    public static fromDocument(document: vscode.TextDocument): SlimTemplateVSC {
+        return new SlimTemplateVSC(document);
     }
 }

@@ -1,56 +1,9 @@
 import * as fs from 'fs';
 
-export class SlimNode {
-    public tag: string;
-    public depth: number;
-    public indentation: number;
-    public children: SlimNode[];
-    public parent: SlimNode | null;
-    public content: string;
-
-    constructor(line: string) {
-        this.depth = null;
-        this.indentation = this.indentationScore(line);
-        this.children = [];
-        this.parent = null;
-        this.content = line;
-    }
-
-    public addChild(child: SlimNode) {
-        child.depth = this.depth + 1;
-        child.parent = this;
-        this.children.push(child);
-    }
-
-    // calculate the number of spaces at the start of the line
-    // assume 4 spaces for any tabs
-    public indentationScore(line: string): number {
-        return line.replace(/\t/g, '    ').match(/^\s*/)?.[0]?.length || 0;
-    }
-
-    public render() {
-        let result = "";
-
-        if (this.depth == 0) {
-            return "";
-        }
-
-        return ("  ".repeat(this.depth)) + this.content + "\n";
-    }
-}
-
-export class SlimRootNode extends SlimNode {
-    constructor() {
-        super("");
-        this.depth = 0;
-        this.indentation = 0;
-        this.tag = "root";
-    }
-}
-
-export class SlimTemplateCore {
+export class SlimTemplate {
     public root: SlimRootNode;
     public indentSize: number = 2;
+    protected static BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'multiple', 'ismap', 'defer', 'declare', 'noresize', 'nowrap'];
 
     constructor(template: string) {
         this.parseLines(template.split('\n'));
@@ -76,9 +29,9 @@ export class SlimTemplateCore {
         return result;
     }
 
-    public static fromFile(filePath: string): SlimTemplateCore {
+    public static fromFile(filePath: string): SlimTemplate {
         const content = fs.readFileSync(filePath, 'utf8');
-        return new SlimTemplateCore(content);
+        return new SlimTemplate(content);
     }
 
     private parseLines(lines: string[]) {

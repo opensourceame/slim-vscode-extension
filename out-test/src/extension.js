@@ -31,7 +31,7 @@ function activate(context) {
     const formatter = vscode.languages.registerDocumentFormattingEditProvider('slim', {
         provideDocumentFormattingEdits(document) {
             const indentSize = vscode.workspace.getConfiguration('slim').get('indentSize', 2);
-            const template = new SlimTemplate();
+            const template = new SlimTemplateVSC();
             template.indentSize = indentSize;
             template.parseFile(document.uri);
             return template.render();
