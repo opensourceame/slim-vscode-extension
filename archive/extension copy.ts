@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
         function getSlimConfiguration(key: string, defaultValue: any) {
             try {
                 // Only access workspace configuration when actually needed
-                return vscode.workspace.getConfiguration('slim').get(key, defaultValue);
+                return vscode.workspace.getConfiguration('slim').get(key, def§aultValue);
             } catch (error) {
                 console.warn(`Error accessing workspace configuration for ${key}:`, error);
                 return defaultValue;

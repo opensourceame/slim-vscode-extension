@@ -21,13 +21,14 @@
     "formatting"
   ],
   "activationEvents": [
+    "*",
     "onLanguage:slim",
     "onCommand:slim.testFormatter",
     "onCommand:slim.checkFormatters",
     "onCommand:slim.forceFormat",
     "onCommand:slim.debugWorkspace"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/src/extension.js",
   "contributes": {
     "languages": [
       {

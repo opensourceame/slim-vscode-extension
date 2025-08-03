@@ -3,7 +3,7 @@ import { SlimSemanticTokenProvider } from './slim.semantic.token.provider';
 
 export class SlimExtensionSyntax {
     public static activate(context: vscode.ExtensionContext) {
-        console.log('Slim Extension Syntax is now active!');
+        console.log('Slim syntax highlighting is now active!');
         // Register semantic token provider for Slim syntax highlighting
         const legend = new vscode.SemanticTokensLegend(
             [
@@ -23,7 +23,7 @@ export class SlimExtensionSyntax {
 
         const semanticTokenProvider = vscode.languages.registerDocumentSemanticTokensProvider(
             { language: 'slim' },
-            new SlimSemanticTokenProvider(),
+            new SlimSemanticTokenProvider(legend),
             legend
         );
 
