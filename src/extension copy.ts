@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { SlimTemplateVSC } from './slim.template';
+import { SlimTemplateVSC } from './slim.template.vsc';
 
 export function activate(context: vscode.ExtensionContext) {
     try {
         // Show a notification that the extension is active
         vscode.window.showInformationMessage('Slim Language Support extension is now active!');
-        console.log('Slim Language Support extension is now active!');
+        console.log('OLD Slim Language Support extension is now active!');
 
         // Helper function to safely get configuration - deferred until needed
         function getSlimConfiguration(key: string, defaultValue: any) {

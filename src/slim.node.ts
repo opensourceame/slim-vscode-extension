@@ -1,4 +1,7 @@
 
+// Import boolean attributes from SlimTemplate
+const BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'multiple', 'ismap', 'defer', 'declare', 'noresize', 'nowrap'];
+
 export class SlimNode {
     public id: string | null;
     public classes: string[];
@@ -24,6 +27,12 @@ export class SlimNode {
         this.classes = [];
     }
 
+    public addChild(child: SlimNode) {
+        child.depth = this.depth + 1;
+        child.parent = this;
+        this.children.push(child);
+    }
+
     public ranges() {
         const ranges: Array<{type: string, start: number, end: number, text: string}> = [];
         const line = this.content.trim();
@@ -37,17 +46,15 @@ export class SlimNode {
         while (currentIndex < line.length) {
             const char = line[currentIndex];
 
-
-
             // Handle ID (starts with #)
             if (char === '#') {
-                const start = currentIndex;
+                const start = currentIndex - 1;
                 let end = start + 1;
                 while (end < line.length && /[a-zA-Z0-9_-]/.test(line[end])) {
                     end++;
                 }
                 ranges.push({
-                    type: "id",
+                    type: "namespace",
                     start,
                     end,
                     text: line.substring(start, end)
@@ -96,12 +103,26 @@ export class SlimNode {
                 continue;
             }
 
-            // Handle attributes (attribute="value" or attribute=value)
+            // Handle attributes (attribute="value" or attribute=value) and boolean attributes
             if (/[a-zA-Z]/.test(char)) {
                 const start = currentIndex;
                 let end = start;
                 while (end < line.length && /[a-zA-Z0-9_-]/.test(line[end])) {
                     end++;
+                }
+
+                const word = line.substring(start, end);
+
+                // Check if this is a boolean attribute (not followed by =)
+                if (end < line.length && line[end] !== '=' && BOOLEAN_ATTRIBUTES.includes(word)) {
+                    ranges.push({
+                        type: "boolean-attribute",
+                        start,
+                        end,
+                        text: word
+                    });
+                    currentIndex = end;
+                    continue;
                 }
 
                 // Check if this might be an attribute (followed by =)
@@ -150,13 +171,26 @@ export class SlimNode {
                         continue;
                     }
                 } else {
-                    // This is a regular tag or text
-                    ranges.push({
-                        type: "tag",
-                        start,
-                        end,
-                        text: line.substring(start, end)
-                    });
+                    // Check if this looks like a tag (only at the very beginning of the line)
+                    // or if it's just text content
+                    const isAtVeryStart = start === 0;
+                    const isLikelyTag = isAtVeryStart && /^[a-zA-Z][a-zA-Z0-9]*$/.test(word);
+
+                    if (isLikelyTag) {
+                        ranges.push({
+                            type: "tag",
+                            start,
+                            end,
+                            text: line.substring(start, end)
+                        });
+                    } else {
+                        ranges.push({
+                            type: "text",
+                            start,
+                            end,
+                            text: line.substring(start, end)
+                        });
+                    }
                     currentIndex = end;
                     continue;
                 }

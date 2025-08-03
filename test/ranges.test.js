@@ -5,7 +5,7 @@ function testRanges() {
     console.log('Testing ranges() function...\n');
 
     // Test case: "button#save.btn.btn-primary data-target="form" save changes"
-    const testLine = "button#save.btn.btn-primary data-target=\"form\" save changes";
+    const testLine = "button#save.btn.btn-primary disabled data-target=\"form\" save changes";
     const node = new SlimNode(testLine);
     const parsedRanges = node.ranges();
 
@@ -19,10 +19,11 @@ function testRanges() {
         { type: "id", start: 6, end: 11, text: "#save" },
         { type: "class", start: 11, end: 15, text: ".btn" },
         { type: "class", start: 15, end: 25, text: ".btn-primary" },
-        { type: "attribute-name", start: 26, end: 37, text: "data-target" },
-        { type: "attribute-value", start: 38, end: 43, text: "\"form\"" },
-        { type: "text", start: 44, end: 48, text: "save" },
-        { type: "text", start: 49, end: 56, text: "changes" }
+        { type: "boolean-attribute", start: 26, end: 34, text: "disabled" },
+        { type: "attribute-name", start: 35, end: 46, text: "data-target" },
+        { type: "attribute-value", start: 47, end: 52, text: "\"form\"" },
+        { type: "text", start: 53, end: 57, text: "save" },
+        { type: "text", start: 58, end: 65, text: "changes" }
     ];
 
     console.log('\nExpected ranges:');
@@ -46,13 +47,15 @@ function testRanges() {
     const hasClasses = parsedRanges.some(r => r.type === "class" && r.text === ".btn") &&
                       parsedRanges.some(r => r.type === "class" && r.text === ".btn-primary");
 
-    // Check for attribute parsing
+        // Check for attribute parsing
     const hasAttributeName = parsedRanges.some(r => r.type === "attribute-name" && r.text === "data-target");
     const hasAttributeValue = parsedRanges.some(r => r.type === "attribute-value" && r.text === "\"form\"");
+    const hasBooleanAttribute = parsedRanges.some(r => r.type === "boolean-attribute" && r.text === "disabled");
 
     console.log('Has tag "button":', hasTag ? '✅' : '❌');
     console.log('Has id "#save":', hasId ? '✅' : '❌');
     console.log('Has classes ".btn" and ".btn-primary":', hasClasses ? '✅' : '❌');
+    console.log('Has boolean attribute "disabled":', hasBooleanAttribute ? '✅' : '❌');
     console.log('Has attribute name "data-target":', hasAttributeName ? '✅' : '❌');
     console.log('Has attribute value "\"form\"":', hasAttributeValue ? '✅' : '❌');
 }

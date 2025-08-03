@@ -2,7 +2,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { SlimTemplate } from './slim.core';
+import { SlimTemplate } from './slim.template';
 
 function printUsage() {
     console.log(`

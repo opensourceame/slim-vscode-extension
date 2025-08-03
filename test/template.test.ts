@@ -1,6 +1,6 @@
 // test that the node tree is built correctly
 
-import { SlimTemplate } from "../src/slim.core";
+import { SlimTemplate } from "../src/slim.template";
 const { expect } = require("chai");
 
 describe("Template", () => {

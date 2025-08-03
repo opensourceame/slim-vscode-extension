@@ -1,5 +1,5 @@
 // Simple TypeScript test without mocha
-import { SlimNode } from "../src/slim.core";
+import { SlimNode } from "../src/slim.node";
 
 function assert(condition: boolean, message: string) {
     if (!condition) {
