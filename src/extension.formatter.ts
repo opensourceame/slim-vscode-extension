@@ -16,7 +16,6 @@ export class SlimExtensionFormatter extends SlimExtensionBase {
                     template.indentSize = 2;
                     const rendered = template.render();
 
-                    console.log(template.tree())
                     // Create a text edit for the entire document
                     const fullRange = new vscode.Range(
                         document.positionAt(0),

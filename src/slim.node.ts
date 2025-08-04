@@ -15,8 +15,9 @@ export class SlimNode {
     public content: string;
     public line: string;
     public blankLinesAbove: number;
+    public lineNumber: number;
 
-    constructor(line: string) {
+    constructor(line: string, lineNumber: number = 0) {
         this.depth = null;
         this.indentation = this.indentationScore(line);
         this.children = [];
@@ -29,6 +30,7 @@ export class SlimNode {
         this.type = "";
         this.classes = [];
         this.blankLinesAbove = 0;
+        this.lineNumber = lineNumber;
 
         // Parse the tag from the line
         this.parseTag(line);
@@ -295,8 +297,6 @@ export class SlimNode {
     public render() {
         let result = "" + "\n".repeat(this.blankLinesAbove);;
 
-        console.log(this.depth + " " + this.tag + " -> " + this.line);
-
         if (this.tag != "root") {
             result += this.whitespace(this.depth) + this.line + "\n";
         }
@@ -317,22 +317,63 @@ export class SlimNode {
     }
 
     public tree() {
-        console.log(this);
         for (const child of this.children) {
             child.tree();
         }
     }
 
-    public isBlankLine() {
-        if (this.tag == "root") {
-            return false;
+    public blockLines(n: number) {
+        let lines = this.blankLinesAbove + 1 + n;
+        for (const child of this.children) {
+            lines += child.blockLines(n);
         }
 
-        return this.line == "";
+        return lines;
+    }
+
+    public getEndLine(): number {
+        if (this.children.length === 0) {
+            return this.lineNumber;
+        }
+
+        // Find the maximum end line among all children
+        let maxEndLine = this.lineNumber;
+        for (const child of this.children) {
+            const childEndLine = child.getEndLine();
+            if (childEndLine > maxEndLine) {
+                maxEndLine = childEndLine;
+            }
+        }
+        return maxEndLine;
+    }
+
+    public getFoldingRanges(minLines: number = 5): Array<{start: number, end: number, tag: string}> {
+        const ranges: Array<{start: number, end: number, tag: string}> = [];
+
+        // Check if this node has more than 5 lines in its block
+        const blockLines = this.blockLines(0);
+        if (blockLines > 5 && !this.isRootNode()) {
+            ranges.push({
+                start: this.lineNumber,
+                end: this.getEndLine(),
+                tag: this.tag
+            });
+        }
+
+        // Recursively check all children
+        for (const child of this.children) {
+            ranges.push(...child.getFoldingRanges());
+        }
+
+        return ranges;
     }
 
     public isRootNode() {
         return this.tag == "root";
+    }
+
+    public isBlankLine(): boolean {
+        return this.line.trim() === "";
     }
 }
 

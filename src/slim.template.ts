@@ -34,19 +34,16 @@ export class SlimTemplate {
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            console.log(line);
             if (line.trim() == "") {
                 blankLines += 1;
-                console.log("blank lines = ", blankLines);
                 continue;
             }
 
-            const node = new SlimNode(line);
+            const node = new SlimNode(line, i);
 
             if (blankLines > 0) {
                 node.blankLinesAbove = blankLines;
                 blankLines = 0;
-                console.log(node);
             }
 
             nodes.push(node);
