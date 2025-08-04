@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
-import { SlimNode } from './slim.node';
-import { SlimSemanticTokenProvider } from './slim.semantic.token.provider';
-import { SlimExtensionSyntax } from './extension.syntax';
+import { SlimExtensionSyntax }    from './extension.syntax';
 import { SlimExtensionFormatter } from './extension.formatter';
+import { SlimExtensionFolding }   from './extension.folding';
 
 export class SlimExtension {
     public getSlimConfiguration(key: string, defaultValue: any) {
@@ -15,6 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     SlimExtensionSyntax.activate(context);
     SlimExtensionFormatter.activate(context);
+    SlimExtensionFolding.activate(context);
 }
 
 export function deactivate() {

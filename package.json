@@ -18,10 +18,11 @@
     "ruby",
     "rails",
     "syntax",
-    "formatting"
+    "formatting",
+    "highlight",
+    "highlighting"
   ],
   "activationEvents": [
-    "*",
     "onLanguage:slim",
     "onCommand:slim.testFormatter",
     "onCommand:slim.checkFormatters",
@@ -110,6 +111,11 @@
           "type": "boolean",
           "default": true,
           "description": "Format Slim files on save"
+        },
+        "slim.codeFoldingDepth": {
+          "type": "number",
+          "default": 5,
+          "description": "Minimum number of lines that can be folded"
         }
       }
     }
