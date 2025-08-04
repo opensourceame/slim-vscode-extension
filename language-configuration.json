@@ -26,10 +26,4 @@
     "increaseIndentPattern": "^(?!.*\\/).*[^\\/]\\s*$",
     "decreaseIndentPattern": "^.*\\/\\s*$|^.*end\\s*$"
   },
-  "folding": {
-    "markers": {
-      "start": "^\\s*\/.*#region\\b",
-      "end": "^\\s*<!--\\s*#endregion\\b.*-->"
-    }
-  }
 }
