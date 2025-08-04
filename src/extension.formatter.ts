@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
+import { SlimExtensionBase } from './extension.base';
 import { SlimTemplate } from './slim.template';
 
-export class SlimExtensionFormatter {
+export class SlimExtensionFormatter extends SlimExtensionBase {
     public static activate(context: vscode.ExtensionContext) {
         console.log('Slim formatter is now active!');
 
@@ -12,9 +13,10 @@ export class SlimExtensionFormatter {
                     // const indentSize = getSlimConfiguration('indentSize', 2);
                     const originalText = document.getText();
                     const template = new SlimTemplate(originalText);
-                    // template.indentSize = indentSize;
+                    template.indentSize = 2;
                     const rendered = template.render();
 
+                    console.log(template.tree())
                     // Create a text edit for the entire document
                     const fullRange = new vscode.Range(
                         document.positionAt(0),

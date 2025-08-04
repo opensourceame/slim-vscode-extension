@@ -11,23 +11,11 @@ export class SlimTemplate {
     }
 
     public render(): string {
-        return this.renderNode(this.root);
+        return this.root.render();
     }
 
-    private renderNode(node: SlimNode): string {
-        let result = "";
-
-        // Render this node
-        if (node.depth > 0) {
-            result += "  ".repeat(node.depth) + node.content + "\n";
-        }
-
-        // Render all children
-        for (const child of node.children) {
-            result += this.renderNode(child);
-        }
-
-        return result;
+    public tree() {
+        this.root.tree();
     }
 
     public static fromFile(filePath: string): SlimTemplate {
@@ -36,13 +24,32 @@ export class SlimTemplate {
     }
 
     private parseLines(lines: string[]) {
-        const root = new SlimRootNode();
+        const root  = new SlimRootNode();
+        const nodes = [];
         this.root = root;
 
         let lastNode = root;
+        let blankLines = 0;
 
         for (let i = 0; i < lines.length; i++) {
-            const node = new SlimNode(lines[i]);
+            const line = lines[i];
+
+            console.log(line);
+            if (line.trim() == "") {
+                blankLines += 1;
+                console.log("blank lines = ", blankLines);
+                continue;
+            }
+
+            const node = new SlimNode(line);
+
+            if (blankLines > 0) {
+                node.blankLinesAbove = blankLines;
+                blankLines = 0;
+                console.log(node);
+            }
+
+            nodes.push(node);
 
             if (node.indentation > lastNode.indentation) {
                 lastNode.addChild(node);

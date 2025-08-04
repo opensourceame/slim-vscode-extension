@@ -19,8 +19,6 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
             const line = lines[lineIndex];
             const ranges = new SlimNode(line).ranges();
 
-            console.log(lineIndex + ': ' + line);
-            console.log(ranges);
             ranges.forEach(range => {
                 // Map range types to semantic token types
                 const tokenType = this.mapRangeTypeToTokenType(range.type);
@@ -37,7 +35,6 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
             });
         }
 
-
         return tokensBuilder.build();
     }
 
@@ -53,7 +50,8 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
             'boolean-attribute': 'boolean-attribute',
             'text': 'text',
             'comment': 'comment',
-            'doctype': 'doctype'
+            'doctype': 'doctype',
+            'operator': 'operator'
         };
 
         const mappedType = typeMap[rangeType] || 'text';

@@ -103,6 +103,45 @@
           }
         },
         {
+          "name": "meta.tag.bracket-attributes.slim",
+          "begin": "\\[",
+          "end": "\\]",
+          "beginCaptures": {
+            "0": { "name": "keyword.operator.bracket.slim" }
+          },
+          "endCaptures": {
+            "0": { "name": "keyword.operator.bracket.slim" }
+          },
+          "patterns": [
+            {
+              "name": "string.quoted.double.slim",
+              "begin": "\"",
+              "end": "\"",
+              "patterns": [
+                {
+                  "name": "constant.character.escape.slim",
+                  "match": "\\\\."
+                }
+              ]
+            },
+            {
+              "name": "string.quoted.single.slim",
+              "begin": "'",
+              "end": "'",
+              "patterns": [
+                {
+                  "name": "constant.character.escape.slim",
+                  "match": "\\\\."
+                }
+              ]
+            },
+            {
+              "name": "entity.other.attribute-name.html.slim",
+              "match": "\\b[a-zA-Z][a-zA-Z0-9_-]*\\b"
+            }
+          ]
+        },
+        {
           "name": "meta.tag.attributes.slim",
           "begin": "^\\s*([a-zA-Z][a-zA-Z0-9]*)\\s*\\(",
           "end": "\\)",

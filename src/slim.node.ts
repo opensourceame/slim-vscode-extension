@@ -13,6 +13,8 @@ export class SlimNode {
     public attributes: string[];
     public type: string;
     public content: string;
+    public line: string;
+    public blankLinesAbove: number;
 
     constructor(line: string) {
         this.depth = null;
@@ -20,16 +22,60 @@ export class SlimNode {
         this.children = [];
         this.parent = null;
         this.content = line;
+        this.line = line.trim();
         this.id = null;
         this.attributes = [];
         this.tag = "";
         this.type = "";
         this.classes = [];
+        this.blankLinesAbove = 0;
+
+        // Parse the tag from the line
+        this.parseTag(line);
+    }
+
+    private parseTag(line: string) {
+        const trimmed = line.trim();
+        if (!trimmed) {
+            this.tag = "";
+            return;
+        }
+
+        // Find the tag name (first word that's not a special character)
+        const tagMatch = trimmed.match(/^([a-zA-Z][a-zA-Z0-9]*)/);
+        if (tagMatch) {
+            this.tag = tagMatch[1];
+        } else {
+            this.tag = "";
+        }
+
+        // Parse ID (starts with #)
+        const idMatch = trimmed.match(/#([a-zA-Z0-9_-]+)/);
+        if (idMatch) {
+            this.id = idMatch[1];
+        }
+
+        // Parse classes (start with .)
+        const classMatches = trimmed.match(/\.([a-zA-Z0-9_-]+)/g);
+        if (classMatches) {
+            this.classes = classMatches.map(match => match.substring(1));
+        }
+
+        // Parse attributes (in square brackets or key=value pairs)
+        const attrMatches = trimmed.match(/\[([^\]]+)\]/g);
+        if (attrMatches) {
+            this.attributes = attrMatches.map(match => match.substring(1, match.length - 1));
+        }
     }
 
     public addChild(child: SlimNode) {
-        child.depth = this.depth + 1;
+        child.depth  = this.depth + 1;
         child.parent = this;
+
+        if (this.type == "comment") {
+            child.type = "comment";
+        }
+
         this.children.push(child);
     }
 
@@ -87,18 +133,40 @@ export class SlimNode {
                 let end = start + 1;
                 let bracketCount = 1;
 
+                // Add the opening bracket as an operator
+                ranges.push({
+                    type: "operator",
+                    start,
+                    end: start + 1,
+                    text: "["
+                });
+
                 while (end < line.length && bracketCount > 0) {
                     if (line[end] === '[') bracketCount++;
                     if (line[end] === ']') bracketCount--;
                     end++;
                 }
 
-                ranges.push({
-                    type: "attribute",
-                    start,
-                    end,
-                    text: line.substring(start, end)
-                });
+                // Add the closing bracket as an operator
+                if (end > start + 1) {
+                    ranges.push({
+                        type: "operator",
+                        start: end - 1,
+                        end,
+                        text: "]"
+                    });
+                }
+
+                // Add the content inside brackets as attribute
+                if (end > start + 2) {
+                    ranges.push({
+                        type: "attribute",
+                        start: start + 1,
+                        end: end - 1,
+                        text: line.substring(start + 1, end - 1)
+                    });
+                }
+
                 currentIndex = end;
                 continue;
             }
@@ -225,20 +293,53 @@ export class SlimNode {
     }
 
     public render() {
-        let result = "";
+        let result = "" + "\n".repeat(this.blankLinesAbove);;
 
-        if (this.depth == 0) {
+        console.log(this.depth + " " + this.tag + " -> " + this.line);
+
+        if (this.tag != "root") {
+            result += this.whitespace(this.depth) + this.line + "\n";
+        }
+
+        for (const child of this.children) {
+            result += child.render();
+        }
+
+        return result;
+    }
+
+    private whitespace(depth: number) {
+        if (this.depth < 1) {
             return "";
         }
 
-        return ("  ".repeat(this.depth)) + this.content + "\n";
+        return "  ".repeat(depth);
+    }
+
+    public tree() {
+        console.log(this);
+        for (const child of this.children) {
+            child.tree();
+        }
+    }
+
+    public isBlankLine() {
+        if (this.tag == "root") {
+            return false;
+        }
+
+        return this.line == "";
+    }
+
+    public isRootNode() {
+        return this.tag == "root";
     }
 }
 
 export class SlimRootNode extends SlimNode {
     constructor() {
         super("");
-        this.depth = 0;
+        this.depth = -1;
         this.indentation = 0;
         this.tag = "root";
     }

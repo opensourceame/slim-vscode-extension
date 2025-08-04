@@ -145,7 +145,7 @@ export function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(trimRangeFormatter);
 
         // Register a command to test the formatter
-        const teSlimTemplateommand = vscode.commands.registerCommand('slim.testFormatter', () => {
+        const teSlimTemplateCommand = vscode.commands.registerCommand('slim.testFormatter', () => {
             const editor = vscode.window.activeTextEditor;
             if (editor && (editor.document.languageId === 'slim' || editor.document.fileName.endsWith('.trim'))) {
                 console.log('Testing formatter manually...');
