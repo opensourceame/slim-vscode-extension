@@ -13,7 +13,6 @@ export class SlimExtensionFormatter extends SlimExtensionBase {
                     // const indentSize = getSlimConfiguration('indentSize', 2);
                     const originalText = document.getText();
                     const template = new SlimTemplate(originalText);
-                    template.indentSize = 2;
                     const rendered = template.render();
 
                     // Create a text edit for the entire document

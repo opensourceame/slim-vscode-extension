@@ -1,6 +1,19 @@
 
 // Import boolean attributes from SlimTemplate
 const BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'multiple', 'ismap', 'defer', 'declare', 'noresize', 'nowrap'];
+const TOKEN_MAP = {
+    'namespace': 'namespace',
+    'tag': 'tag',
+    'id': 'id',
+    'class': 'class',
+    'attribute-name': 'attribute-name',
+    'attribute-value': 'attribute-value',
+    'boolean-attribute': 'boolean-attribute',
+    'text': 'text',
+    'comment': 'comment',
+    'doctype': 'doctype',
+    'operator': 'operator'
+};
 
 export class SlimNode {
     public id: string | null;
@@ -43,6 +56,11 @@ export class SlimNode {
             return;
         }
 
+        if (trimmed.startsWith("/")) {
+            this.type = "comment";
+            return;
+        }
+
         // Find the tag name (first word that's not a special character)
         const tagMatch = trimmed.match(/^([a-zA-Z][a-zA-Z0-9]*)/);
         if (tagMatch) {
@@ -82,8 +100,17 @@ export class SlimNode {
     }
 
     public ranges() {
-        const ranges: Array<{type: string, start: number, end: number, text: string}> = [];
-        const indent = this.content.match(/^\s*/)?.[0]?.length || 0;
+        if (this.type == "comment") {
+            return [new SlimNodeRange(
+                "comment",
+                0,
+                this.content.length,
+                this.content
+            )];
+        }
+
+        const ranges: SlimNodeRange[] = [];
+        const indent = this.indentation;
         const line = this.content.trim();
         let currentIndex = 0;
 
@@ -102,12 +129,12 @@ export class SlimNode {
                 while (end < line.length && /[a-zA-Z0-9_-]/.test(line[end])) {
                     end++;
                 }
-                ranges.push({
-                    type: "id",
+                ranges.push(new SlimNodeRange(
+                    "id",
                     start,
                     end,
-                    text: line.substring(start, end)
-                });
+                    line.substring(start, end)
+                ));
                 currentIndex = end;
                 continue;
             }
@@ -119,12 +146,12 @@ export class SlimNode {
                 while (end < line.length && /[a-zA-Z0-9_-]/.test(line[end])) {
                     end++;
                 }
-                ranges.push({
-                    type: "class",
+                ranges.push(new SlimNodeRange(
+                    "class",
                     start,
                     end,
-                    text: line.substring(start, end)
-                });
+                    line.substring(start, end)
+                ));
                 currentIndex = end;
                 continue;
             }
@@ -136,12 +163,12 @@ export class SlimNode {
                 let bracketCount = 1;
 
                 // Add the opening bracket as an operator
-                ranges.push({
-                    type: "operator",
+                ranges.push(new SlimNodeRange(
+                    "operator",
                     start,
-                    end: start + 1,
-                    text: "["
-                });
+                    start + 1,
+                    "["
+                ));
 
                 while (end < line.length && bracketCount > 0) {
                     if (line[end] === '[') bracketCount++;
@@ -151,22 +178,22 @@ export class SlimNode {
 
                 // Add the closing bracket as an operator
                 if (end > start + 1) {
-                    ranges.push({
-                        type: "operator",
-                        start: end - 1,
+                    ranges.push(new SlimNodeRange(
+                        "operator",
+                        end - 1,
                         end,
-                        text: "]"
-                    });
+                        "]"
+                        ));
                 }
 
                 // Add the content inside brackets as attribute
                 if (end > start + 2) {
-                    ranges.push({
-                        type: "attribute",
-                        start: start + 1,
-                        end: end - 1,
-                        text: line.substring(start + 1, end - 1)
-                    });
+                    ranges.push(new SlimNodeRange(
+                        "attribute",
+                        start + 1,
+                        end - 1,
+                        line.substring(start + 1, end - 1)
+                    ));
                 }
 
                 currentIndex = end;
@@ -185,12 +212,12 @@ export class SlimNode {
 
                 // Check if this is a boolean attribute (not followed by =)
                 if (end < line.length && line[end] !== '=' && BOOLEAN_ATTRIBUTES.includes(word)) {
-                    ranges.push({
-                        type: "boolean-attribute",
+                    ranges.push(new SlimNodeRange(
+                        "boolean-attribute",
                         start,
                         end,
-                        text: word
-                    });
+                        word
+                    ));
                     currentIndex = end;
                     continue;
                 }
@@ -198,12 +225,12 @@ export class SlimNode {
                 // Check if this might be an attribute (followed by =)
                 if (end < line.length && line[end] === '=') {
                     // This is an attribute name
-                    ranges.push({
-                        type: "attribute-name",
+                    ranges.push(new SlimNodeRange(
+                        "attribute-name",
                         start,
                         end,
-                        text: line.substring(start, end)
-                    });
+                        line.substring(start, end)
+                    ));
                     currentIndex = end;
 
                     // Skip the equals sign
@@ -231,12 +258,12 @@ export class SlimNode {
                             }
                         }
 
-                        ranges.push({
-                            type: "attribute-value",
-                            start: valueStart,
-                            end: valueEnd,
-                            text: line.substring(valueStart, valueEnd)
-                        });
+                        ranges.push(new SlimNodeRange(
+                            "attribute-value",
+                            valueStart,
+                            valueEnd,
+                            line.substring(valueStart, valueEnd)
+                        ));
                         currentIndex = valueEnd;
                         continue;
                     }
@@ -246,12 +273,12 @@ export class SlimNode {
                     const isLikelyTag = isAtVeryStart && /^[a-zA-Z][a-zA-Z0-9]*$/.test(word);
 
                     if (isLikelyTag) {
-                        ranges.push({
-                            type: "tag",
+                        ranges.push(new SlimNodeRange(
+                            "tag",
                             start,
                             end,
-                            text: line.substring(start, end)
-                        });
+                            line.substring(start, end)
+                        ));
                         currentIndex = end;
                         continue;
                     }
@@ -265,12 +292,7 @@ export class SlimNode {
                 const textContent = line.substring(start, end).trim();
 
                 if (textContent.length > 0) {
-                    ranges.push({
-                        type: "text",
-                        start,
-                        end,
-                        text: textContent
-                    });
+                    ranges.push(...this.parseText(textContent, start, end));
                 }
                 break; // Exit the loop since we've processed the rest of the line
             }
@@ -281,8 +303,9 @@ export class SlimNode {
 
         // add the indentation to the ranges
         ranges.forEach(range => {
+            range.tokenType = this.tokenType();
             range.start += indent;
-            range.end   += indent;
+            range.end += indent;
         });
 
         return ranges;
@@ -306,6 +329,17 @@ export class SlimNode {
         }
 
         return result;
+    }
+
+    // TODO: split text into ranges of text and variables
+    // e.g. "Hello #{name}" -> [{type: "text", start: 0, end: 5, text: "Hello "}, {type: "variable", start: 5, end: 10, text: "name"}]
+    private parseText(text: string, start: number, end: number) {
+        return [new SlimNodeRange(
+            "text",
+            start,
+            end,
+            text
+        )];
     }
 
     private whitespace(depth: number) {
@@ -347,12 +381,12 @@ export class SlimNode {
         return maxEndLine;
     }
 
-    public getFoldingRanges(minLines: number = 5): Array<{start: number, end: number, tag: string}> {
-        const ranges: Array<{start: number, end: number, tag: string}> = [];
+    public getFoldingRanges(minLines: number = 5): Array<{ start: number, end: number, tag: string }> {
+        const ranges: Array<{ start: number, end: number, tag: string }> = [];
 
         // Check if this node has more than 5 lines in its block
         const blockLines = this.blockLines(0);
-        if (blockLines > 5 && !this.isRootNode()) {
+        if (blockLines > minLines && !this.isRootNode()) {
             ranges.push({
                 start: this.lineNumber,
                 end: this.getEndLine(),
@@ -372,8 +406,20 @@ export class SlimNode {
         return this.tag == "root";
     }
 
-    public isBlankLine(): boolean {
-        return this.line.trim() === "";
+    public getSyntaxRanges(syntaxRanges: Array<SlimNodeSyntaxRange> = []): Array<SlimNodeSyntaxRange> {
+        if (!this.isRootNode()) {
+            syntaxRanges.push(new SlimNodeSyntaxRange(this.lineNumber, this, this.ranges() as SlimNodeRange[]));
+        }
+
+        for (const child of this.children) {
+           child.getSyntaxRanges(syntaxRanges);
+        }
+
+        return syntaxRanges;
+    }
+
+    public tokenType(): string {
+        return TOKEN_MAP[this.type] || "text";
     }
 }
 
@@ -383,5 +429,32 @@ export class SlimRootNode extends SlimNode {
         this.depth = -1;
         this.indentation = 0;
         this.tag = "root";
+    }
+}
+
+class SlimNodeSyntaxRange {
+    public lineNumber: number;
+    public node: SlimNode;
+    public ranges: SlimNodeRange[];
+
+    constructor(lineNumber: number, node: SlimNode, ranges: SlimNodeRange[]) {
+        this.lineNumber = lineNumber;
+        this.node = node;
+        this.ranges = ranges;
+    }
+}
+
+class SlimNodeRange {
+    public type: string;
+    public tokenType: string;
+    public start: number;
+    public end: number;
+    public text: string;
+
+    constructor(type: string, start: number, end: number, text: string) {
+        this.type = type;
+        this.start = start;
+        this.end = end;
+        this.text = text;
     }
 }

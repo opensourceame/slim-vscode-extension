@@ -18,11 +18,11 @@ function testRanges() {
         { type: "tag", start: 0, end: 6, text: "button" },
         { type: "id", start: 6, end: 11, text: "#save" },
         { type: "class", start: 11, end: 15, text: ".btn" },
-        { type: "class", start: 15, end: 25, text: ".btn-primary" },
-        { type: "boolean-attribute", start: 26, end: 34, text: "disabled" },
-        { type: "attribute-name", start: 35, end: 46, text: "data-target" },
-        { type: "attribute-value", start: 47, end: 52, text: "\"form\"" },
-        { type: "text", start: 53, end: 65, text: "save changes" }
+        { type: "class", start: 15, end: 27, text: ".btn-primary" },
+        { type: "boolean-attribute", start: 28, end: 36, text: "disabled" },
+        { type: "attribute-name", start: 37, end: 48, text: "data-target" },
+        { type: "attribute-value", start: 49, end: 55, text: "\"form\"" },
+        { type: "text", start: 56, end: 68, text: "save changes" }
     ];
 
     console.log('\nExpected ranges:');
@@ -46,7 +46,7 @@ function testRanges() {
     const hasClasses = parsedRanges.some(r => r.type === "class" && r.text === ".btn") &&
                       parsedRanges.some(r => r.type === "class" && r.text === ".btn-primary");
 
-        // Check for attribute parsing
+    // Check for attribute parsing
     const hasAttributeName = parsedRanges.some(r => r.type === "attribute-name" && r.text === "data-target");
     const hasAttributeValue = parsedRanges.some(r => r.type === "attribute-value" && r.text === "\"form\"");
     const hasBooleanAttribute = parsedRanges.some(r => r.type === "boolean-attribute" && r.text === "disabled");
@@ -57,6 +57,22 @@ function testRanges() {
     console.log('Has boolean attribute "disabled":', hasBooleanAttribute ? '✅' : '❌');
     console.log('Has attribute name "data-target":', hasAttributeName ? '✅' : '❌');
     console.log('Has attribute value "\"form\"":', hasAttributeValue ? '✅' : '❌');
+
+    // Check that ranges are SlimNodeRange objects with tokenType property
+    console.log('\nChecking SlimNodeRange object structure:');
+    const hasTokenType = parsedRanges.every(r => r.hasOwnProperty('tokenType'));
+    console.log('All ranges have tokenType property:', hasTokenType ? '✅' : '❌');
+
+    if (parsedRanges.length > 0) {
+        const firstRange = parsedRanges[0];
+        console.log('Sample range structure:', {
+            type: firstRange.type,
+            tokenType: firstRange.tokenType,
+            start: firstRange.start,
+            end: firstRange.end,
+            text: firstRange.text
+        });
+    }
 }
 
 function testSimpleTextRanges() {
@@ -96,6 +112,11 @@ function testSimpleTextRanges() {
 
     console.log('Has tag "p":', hasTag ? '✅' : '❌');
     console.log('Has text "This is a simple website.":', hasText ? '✅' : '❌');
+
+    // Check that ranges are SlimNodeRange objects
+    console.log('\nChecking SlimNodeRange object structure:');
+    const hasTokenType = parsedRanges.every(r => r.hasOwnProperty('tokenType'));
+    console.log('All ranges have tokenType property:', hasTokenType ? '✅' : '❌');
 }
 
 // Run the tests
