@@ -1,6 +1,6 @@
 # Slim/Trim Language Support for VS Code
 
-A comprehensive VS Code extension that provides syntax highlightin, formatting and code folding for Slim and Trim templates.
+A comprehensive VS Code extension that provides syntax highlighting, formatting and code folding for Slim and Trim templates.
 
 ## Features
 
