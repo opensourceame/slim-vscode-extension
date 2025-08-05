@@ -303,7 +303,7 @@ export class SlimNode {
 
         // add the indentation to the ranges
         ranges.forEach(range => {
-            range.tokenType = this.tokenType();
+            range.tokenType = TOKEN_MAP[range.type] || "text";
             range.start += indent;
             range.end += indent;
         });
