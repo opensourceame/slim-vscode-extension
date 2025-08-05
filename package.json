@@ -26,9 +26,7 @@
     "onLanguage:slim",
     "onCommand:slim.testFormatter",
     "onCommand:slim.checkFormatters",
-    "onCommand:slim.forceFormat",
-    "onCommand:slim.debugWorkspace",
-    "onCommand:slim.debugSemanticTokens"
+    "onCommand:slim.forceFormat"
   ],
   "main": "./out/src/extension.js",
   "contributes": {
