@@ -130,6 +130,9 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
+### 0.0.6
+- improve syntax highlighting to cover multi-line comments
+
 ### 0.0.5
 - Added intelligent code folding based on content structure
 - Automatic folding ranges for blocks

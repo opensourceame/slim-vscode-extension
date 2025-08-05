@@ -1,8 +1,8 @@
 {
   "name": "slim-vscode-extension",
   "displayName": "Slim/Trim Language Support",
-  "description": "Syntax highlighting and formatting for Slim and Trim templates",
-  "version": "0.0.5",
+  "description": "Syntax highlighting, code folding and formatting for Slim and Trim templates",
+  "version": "0.0.6",
   "publisher": "slim-support",
   "engines": {
     "vscode": "^1.60.0"
@@ -27,7 +27,8 @@
     "onCommand:slim.testFormatter",
     "onCommand:slim.checkFormatters",
     "onCommand:slim.forceFormat",
-    "onCommand:slim.debugWorkspace"
+    "onCommand:slim.debugWorkspace",
+    "onCommand:slim.debugSemanticTokens"
   ],
   "main": "./out/src/extension.js",
   "contributes": {
@@ -72,6 +73,11 @@
         "command": "slim.debugWorkspace",
         "title": "Slim: Debug Workspace",
         "category": "Slim"
+      },
+      {
+        "command": "slim.debugSemanticTokens",
+        "title": "Debug Semantic Tokens",
+        "category": "Slim"
       }
     ],
     "menus": {
@@ -90,6 +96,10 @@
         },
         {
           "command": "slim.debugWorkspace",
+          "when": "editorLangId == slim"
+        },
+        {
+          "command": "slim.debugSemanticTokens",
           "when": "editorLangId == slim"
         }
       ]
