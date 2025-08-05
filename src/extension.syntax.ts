@@ -5,7 +5,8 @@ import { SlimExtensionBase } from './extension.base';
 
 export class SlimExtensionSyntax extends SlimExtensionBase {
     public static activate(context: vscode.ExtensionContext) {
-        console.log('Slim syntax highlighting is now active!');
+        const activationId = Math.random().toString(36).substr(2, 9);
+        console.log(`Slim syntax highlighting is now active! [${activationId}]`);
 
         // Register semantic token provider for Slim syntax highlighting
         const legend = new vscode.SemanticTokensLegend(
@@ -20,7 +21,8 @@ export class SlimExtensionSyntax extends SlimExtensionBase {
                 'text',
                 'comment',
                 'doctype',
-                'operator'
+                'operator',
+                'variable'
             ],
             []
         );

@@ -4,7 +4,8 @@ import { SlimTemplate } from './slim.template';
 
 export class SlimExtensionFormatter extends SlimExtensionBase {
     public static activate(context: vscode.ExtensionContext) {
-        console.log('Slim formatter is now active!');
+        const activationId = Math.random().toString(36).substr(2, 9);
+        console.log(`Slim formatter is now active! [${activationId}]`);
 
         const formatter = vscode.languages.registerDocumentFormattingEditProvider(
             { language: 'slim' },

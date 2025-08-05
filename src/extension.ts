@@ -1,21 +1,24 @@
 import * as vscode from 'vscode';
-import { SlimExtensionSyntax }    from './extension.syntax';
-import { SlimExtensionFormatter } from './extension.formatter';
-import { SlimExtensionFolding }   from './extension.folding';
+import { SlimExtensionFormatter }    from './extension.formatter';
+import { SlimExtensionFolding }      from './extension.folding';
+import { SlimExtensionSyntax }       from './extension.syntax';
 import { SlimSemanticTokenProvider } from './slim.semantic.token.provider';
 
-export class SlimExtension {
-    public getSlimConfiguration(key: string, defaultValue: any) {
-        return vscode.workspace.getConfiguration('slim').get(key, defaultValue);
-    }
-}
+console.log('SlimExtension.ts loaded');
 
 export function activate(context: vscode.ExtensionContext) {
+    const activationId = Math.random().toString(36).substr(2, 9);
+    console.log(`=== SLIM EXTENSION ACTIVATION START [${activationId}] ===`);
     console.log('Slim Language Support extension is now active!');
+    console.log('Activation context:', context.extension.extensionPath);
+    console.log('Extension ID:', context.extension.id);
+    console.log('Extension path:', context.extension.extensionUri.fsPath);
 
+    console.log(`=== ACTIVATING SUB-EXTENSIONS [${activationId}] ===`);
     SlimExtensionSyntax.activate(context);
     SlimExtensionFormatter.activate(context);
     SlimExtensionFolding.activate(context);
+    console.log(`=== SLIM EXTENSION ACTIVATION COMPLETE [${activationId}] ===`);
 
     // Register debug command
     const debugCommand = vscode.commands.registerCommand('slim.debugSemanticTokens', () => {

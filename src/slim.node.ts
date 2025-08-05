@@ -12,7 +12,8 @@ const TOKEN_MAP = {
     'text': 'text',
     'comment': 'comment',
     'doctype': 'doctype',
-    'operator': 'operator'
+    'operator': 'operator',
+    'variable': 'variable',
 };
 
 export class SlimNode {
@@ -331,10 +332,58 @@ export class SlimNode {
         return result;
     }
 
-    // TODO: split text into ranges of text and variables
-    // e.g. "Hello #{name}" -> [{type: "text", start: 0, end: 5, text: "Hello "}, {type: "variable", start: 5, end: 10, text: "name"}]
-    private parseText(text: string, start: number, end: number) {
-        return [new SlimNodeRange(
+    // Split text into ranges of text and variables
+    // e.g. "Hello #{name}," -> [{type: "text", start: 0, end: 5, text: "Hello "}, {type: "variable", start: 5, end: 10, text: "name"}, {type: "text", start: 10, end: 11, text: ","}]
+    public parseText(text: string, start: number, end: number) {
+        const ranges: SlimNodeRange[] = [];
+        let currentIndex = 0;
+        let textStart = 0;
+
+        while (currentIndex < text.length) {
+                        // Look for Slim variable interpolation: #{variable}
+            const variableMatch = text.substring(currentIndex).match(/^#\{([^}]+)\}/);
+
+            if (variableMatch) {
+                // Add text before the variable
+                if (currentIndex > textStart) {
+                    const textContent = text.substring(textStart, currentIndex);
+                    ranges.push(new SlimNodeRange(
+                        "text",
+                        start + textStart,
+                        start + currentIndex,
+                        textContent
+                    ));
+                }
+
+                // Add the variable (entire #{expression} including braces)
+                const variableStart = start + currentIndex;
+                const variableEnd = start + currentIndex + variableMatch[0].length;
+                ranges.push(new SlimNodeRange(
+                    "variable",
+                    variableStart,
+                    variableEnd,
+                    variableMatch[0] // Include the full #{expression} including braces
+                ));
+
+                currentIndex += variableMatch[0].length;
+                textStart = currentIndex;
+            } else {
+                currentIndex++;
+            }
+        }
+
+        // Add any remaining text
+        if (textStart < text.length) {
+            const remainingText = text.substring(textStart);
+            ranges.push(new SlimNodeRange(
+                "text",
+                start + textStart,
+                start + text.length,
+                remainingText
+            ));
+        }
+
+        return ranges.length > 0 ? ranges : [new SlimNodeRange(
             "text",
             start,
             end,
