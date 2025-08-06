@@ -57,7 +57,7 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
         const template = new SlimTemplate(document.getText());
         const root = template.root;
         const syntaxRanges = root.getSyntaxRanges();
-
+        console.log(syntaxRanges);
         for (const syntaxRange of syntaxRanges) {
             syntaxRange.ranges.forEach(range => {
                 tokensBuilder.push(
@@ -66,37 +66,13 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
                     range.end - range.start,
                     this.legend.tokenTypes.indexOf(range.tokenType)
                 );
+                console.log(range.tokenType);
+
+
             });
         }
 
         console.log(syntaxRanges);
         return tokensBuilder.build();
-    }
-
-    private mapRangeTypeToTokenType(rangeType: string): string {
-        // Map range types to semantic token types
-        const typeMap: { [key: string]: string } = {
-            'namespace': 'namespace',
-            'tag': 'tag',
-            'id': 'id',
-            'class': 'class',
-            'attribute-name': 'attribute-name',
-            'attribute-value': 'attribute-value',
-            'boolean-attribute': 'boolean-attribute',
-            'text': 'text',
-            'comment': 'comment',
-            'doctype': 'doctype',
-            'operator': 'operator'
-        };
-
-        const mappedType = typeMap[rangeType] || 'text';
-
-        // Verify the token type exists in the legend
-        if (this.legend.tokenTypes.includes(mappedType)) {
-            return mappedType;
-        }
-
-        // Fallback to 'text' if the type isn't in the legend
-        return 'text';
     }
 }
