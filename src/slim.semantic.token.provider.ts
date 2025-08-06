@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
-import { SlimNode } from './slim.node';
 import { SlimTemplate } from './slim.template';
-
 
 export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensProvider {
     private legend: vscode.SemanticTokensLegend;
@@ -18,7 +16,7 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
         const template = new SlimTemplate(document.getText());
         const root = template.root;
         const lineRanges = root.getLineRanges();
-        console.log(lineRanges);
+
         for (const lineRange of lineRanges) {
             lineRange.ranges.forEach(range => {
                 tokensBuilder.push(
