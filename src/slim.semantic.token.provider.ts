@@ -57,7 +57,7 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
         const template = new SlimTemplate(document.getText());
         const root = template.root;
         const syntaxRanges = root.getSyntaxRanges();
-        console.log(syntaxRanges);
+
         for (const syntaxRange of syntaxRanges) {
             syntaxRange.ranges.forEach(range => {
                 tokensBuilder.push(
@@ -66,13 +66,9 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
                     range.end - range.start,
                     this.legend.tokenTypes.indexOf(range.tokenType)
                 );
-                console.log(range.tokenType);
-
-
             });
         }
 
-        console.log(syntaxRanges);
         return tokensBuilder.build();
     }
 }

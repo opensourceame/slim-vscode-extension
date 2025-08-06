@@ -103,13 +103,12 @@ export class SlimNode {
 
     public ranges() {
         if (this.type == "comment") {
-            const range = new SlimNodeRange(
+            return [new SlimNodeRange(
                 "comment",
                 0,
                 this.content.length,
                 this.content
-            );
-            return [range];
+            )];
         }
 
         const ranges: SlimNodeRange[] = [];
