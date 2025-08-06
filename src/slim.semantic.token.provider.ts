@@ -64,12 +64,12 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
                     syntaxRange.lineNumber,
                     range.start,
                     range.end - range.start,
-                    this.legend.tokenTypes.indexOf(syntaxRange.node.tokenType())
+                    this.legend.tokenTypes.indexOf(range.tokenType)
                 );
             });
         }
 
-        // return null;
+        console.log(syntaxRanges);
         return tokensBuilder.build();
     }
 
