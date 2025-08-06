@@ -10,17 +10,18 @@ export class SlimExtensionSyntax extends SlimExtensionBase {
         // Register semantic token provider for Slim syntax highlighting
         const legend = new vscode.SemanticTokensLegend(
             [
-                'id',
-                'tag',
-                'namespace',
-                'class',
                 'attribute-name',
                 'attribute-value',
                 'boolean-attribute',
-                'text',
+                'class',
                 'comment',
                 'doctype',
-                'operator'
+                'id',
+                'namespace',
+                'operator',
+                'tag',
+                'text',
+                'variable'
             ],
             []
         );

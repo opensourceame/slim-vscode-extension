@@ -2,17 +2,19 @@
 // Import boolean attributes from SlimTemplate
 const BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'multiple', 'ismap', 'defer', 'declare', 'noresize', 'nowrap'];
 const TOKEN_MAP = {
-    'namespace': 'namespace',
-    'tag': 'tag',
-    'id': 'id',
-    'class': 'class',
     'attribute-name': 'attribute-name',
     'attribute-value': 'attribute-value',
     'boolean-attribute': 'boolean-attribute',
-    'text': 'text',
+    'class': 'class',
     'comment': 'comment',
     'doctype': 'doctype',
-    'operator': 'operator'
+    'id': 'id',
+    'label': 'label',
+    'namespace': 'namespace',
+    'operator': 'operator',
+    'tag': 'tag',
+    'text': 'text',
+    'variable': 'variable',
 };
 
 export class SlimNode {
@@ -292,7 +294,7 @@ export class SlimNode {
                 const textContent = line.substring(start, end).trim();
 
                 if (textContent.length > 0) {
-                    ranges.push(...this.parseText(textContent, start, end));
+                    ranges.push(...this.parseTextRanges(textContent, start, end));
                 }
                 break; // Exit the loop since we've processed the rest of the line
             }
@@ -303,10 +305,34 @@ export class SlimNode {
 
         // add the indentation to the ranges
         ranges.forEach(range => {
-            range.tokenType = TOKEN_MAP[range.type] || "text";
             range.start += indent;
-            range.end += indent;
+            range.end   += indent;
         });
+
+        return ranges;
+    }
+
+    public parseTextRanges(text: string, start: number, end: number) {
+        const ranges: SlimNodeRange[] = [];
+        let currentPos = start;
+
+        // Split by #{...} and {{...}} patterns, keeping the delimiters
+        const parts = text.split(/(#\{[^}]*\}|\{\{[^}]*\}\})/g);
+
+        for (const part of parts) {
+            if (!part) continue; // Skip empty parts
+
+            const partStart = currentPos;
+            const partEnd = currentPos + part.length;
+
+            if (part.startsWith("#{") || part.startsWith("{{")) {
+                ranges.push(new SlimNodeRange("variable", partStart, partEnd, part));
+            } else {
+                ranges.push(new SlimNodeRange("text", partStart, partEnd, part));
+            }
+
+            currentPos = partEnd;
+        }
 
         return ranges;
     }
@@ -329,17 +355,6 @@ export class SlimNode {
         }
 
         return result;
-    }
-
-    // TODO: split text into ranges of text and variables
-    // e.g. "Hello #{name}" -> [{type: "text", start: 0, end: 5, text: "Hello "}, {type: "variable", start: 5, end: 10, text: "name"}]
-    private parseText(text: string, start: number, end: number) {
-        return [new SlimNodeRange(
-            "text",
-            start,
-            end,
-            text
-        )];
     }
 
     private whitespace(depth: number) {
@@ -456,5 +471,6 @@ class SlimNodeRange {
         this.start = start;
         this.end = end;
         this.text = text;
+        this.tokenType = TOKEN_MAP[type] || "text";
     }
 }
