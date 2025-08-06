@@ -39,7 +39,7 @@ export class SlimTemplate {
                 continue;
             }
 
-            const node = new SlimNode(line, i);
+            const node = new SlimNode(line, i + 1);
 
             if (blankLines > 0) {
                 node.blankLinesAbove = blankLines;

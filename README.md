@@ -8,7 +8,7 @@ A comprehensive VS Code extension that provides syntax highlighting, formatting 
 - **HTML Elements**: Proper highlighting for all HTML tags
 - **Attributes**: Support for ID (#) and class (.) selectors
 - **Ruby Code**: Embedded Ruby code with proper syntax highlighting
-- **Comments**: Support for both line (//) and block comments
+- **Comments**: Support for both single line and block comments
 - **Text Content**: Proper highlighting for text content with pipe (|) syntax
 - **Doctype**: Special highlighting for doctype declarations
 

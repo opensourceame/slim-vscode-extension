@@ -7,15 +7,23 @@ const TOKEN_MAP = {
     'boolean-attribute': 'boolean-attribute',
     'class': 'class',
     'comment': 'comment',
+    'comment-block': 'comment',
+    'css': 'namespace',
+    'css-block': 'text',
     'doctype': 'doctype',
     'id': 'id',
+    'javascript': 'namespace',
+    'javascript-block': 'text',
     'label': 'label',
     'namespace': 'namespace',
+    'scss': 'namespace',
+    'scss-block': 'text',
     'operator': 'operator',
     'tag': 'tag',
     'text': 'text',
     'variable': 'variable',
 };
+const PRESERVE_BLOCK_TYPES = ['comment', 'javascript', 'css', 'scss'];
 
 export class SlimNode {
     public id: string | null;
@@ -53,10 +61,27 @@ export class SlimNode {
 
     private parseTag(line: string) {
         const trimmed = line.trim();
+
         if (!trimmed) {
             this.tag = "";
             return;
         }
+
+        if (trimmed == 'javascript:') {
+            this.type = "javascript";
+            return;
+        }
+
+        if (trimmed == 'css:') {
+            this.type = "css";
+            return;
+        }
+
+        if (trimmed == 'scss:') {
+            this.type = "css";
+            return;
+        }
+
 
         if (trimmed.startsWith("/")) {
             this.type = "comment";
@@ -94,17 +119,30 @@ export class SlimNode {
         child.depth  = this.depth + 1;
         child.parent = this;
 
-        if (this.type == "comment") {
-            child.type = "comment";
+        if (PRESERVE_BLOCK_TYPES.includes(this.type)) {
+            child.type = this.type + "-block";
+        }
+
+        if (this.isBlockNode()) {
+            child.type = this.type;
         }
 
         this.children.push(child);
     }
 
     public ranges() {
-        if (this.type == "comment") {
+        if (PRESERVE_BLOCK_TYPES.includes(this.type)) {
             return [new SlimNodeRange(
-                "comment",
+                this.type,
+                0,
+                this.content.length,
+                this.content
+            )];
+        }
+
+        if (this.isBlockNode()) {
+            return [new SlimNodeRange(
+                this.type,
                 0,
                 this.content.length,
                 this.content
@@ -347,7 +385,7 @@ export class SlimNode {
         let result = "" + "\n".repeat(this.blankLinesAbove);;
 
         if (this.tag != "root") {
-            result += this.whitespace(this.depth) + this.line + "\n";
+            result += this.whitespace() + this.line + "\n";
         }
 
         for (const child of this.children) {
@@ -357,12 +395,19 @@ export class SlimNode {
         return result;
     }
 
-    private whitespace(depth: number) {
+    private whitespace() {
         if (this.depth < 1) {
             return "";
         }
 
-        return "  ".repeat(depth);
+        if (this.isBlockNode()) {
+            const indentation = this.indentation - this.parent.indentation;
+            console.log(this);
+            console.log(this.tokenType());
+            return this.parent.whitespace() + " ".repeat(indentation);
+        }
+
+        return "  ".repeat(this.depth);
     }
 
     public tree() {
@@ -421,16 +466,20 @@ export class SlimNode {
         return this.tag == "root";
     }
 
-    public getSyntaxRanges(syntaxRanges: Array<SlimNodeSyntaxRange> = []): Array<SlimNodeSyntaxRange> {
+    public isBlockNode() {
+        return this.type.endsWith("-block");
+    }
+
+    public getLineRanges(lineRanges: Array<SlimLineRange> = []): Array<SlimLineRange> {
         if (!this.isRootNode()) {
-            syntaxRanges.push(new SlimNodeSyntaxRange(this.lineNumber, this, this.ranges() as SlimNodeRange[]));
+            lineRanges.push(new SlimLineRange(this.lineNumber, this, this.ranges() as SlimNodeRange[]));
         }
 
         for (const child of this.children) {
-           child.getSyntaxRanges(syntaxRanges);
+           child.getLineRanges(lineRanges);
         }
 
-        return syntaxRanges;
+        return lineRanges;
     }
 
     public tokenType(): string {
@@ -447,7 +496,7 @@ export class SlimRootNode extends SlimNode {
     }
 }
 
-class SlimNodeSyntaxRange {
+class SlimLineRange {
     public lineNumber: number;
     public node: SlimNode;
     public ranges: SlimNodeRange[];
