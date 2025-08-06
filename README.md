@@ -55,6 +55,10 @@ The extension provides several configuration options:
 ## Usage
 
 ### Basic Slim Template
+
+![Basic Slim Template](images/screenshot-basic.png)
+![Formatting Commands](images/screenshot-formatting.png)
+
 ```
 doctype html
 html
