@@ -54,58 +54,21 @@ The extension provides several configuration options:
 
 ## Usage
 
-### Basic Slim Template
+### Syntax Highlighting
 
 ![Basic Slim Template](images/screenshot-basic.png)
-![Formatting Commands](images/screenshot-formatting.png)
 
-```
-doctype html
-html
-  head
-    title My Website
-    meta[name="viewport" content="width=device-width, initial-scale=1.0"]
-  body
-    section#header
-      h1.a.b.c#abc Hello, World!
 
-      p#article.read.highlight data-id="123" This is a simple website.
+### Formatting
 
-        ul#list-of-items
-          li.one style="color: red;" One
-          li.two Two
-          li.three Three
 
-        div#footer
-          p#copyright Copyright 2025
-
-```
-
-### Formatting Commands
 - `Format Document` (Shift+Alt+F): Format the entire document
 - `Format Selection` (Ctrl+K Ctrl+F): Format selected text
 - Auto-format on save (if enabled)
 
-### Code Folding
-The extension automatically creates folding ranges for blocks with sufficient content:
+![Formatting Commands](images/screenshot-formatting.png)
 
-```slim
-doctype html
-html                    # ← Folds entire document (14 lines)
-  head
-    title My Website
-    meta[name="viewport" content="width=device-width, initial-scale=1.0"]
-  body                  # ← Folds body content (10 lines)
-    section#header      # ← Folds section content (9 lines)
-      h1.a.b.c#abc Hello, World!
-      p#article.read.highlight data-id="123" This is a simple website.
-        ul#list-of-items
-          li.one style="color: red;" One
-          li.two Two
-          li.three Three
-        div#footer
-          p#copyright Copyright 2025
-```
+### Code folding
 
 **Folding Behavior:**
 - Blocks with 5+ lines automatically get folding ranges
@@ -130,4 +93,5 @@ html                    # ← Folds entire document (14 lines)
 
 ## License
 
+(c) David Kelly 2025
 MIT License - see LICENSE file for details.
