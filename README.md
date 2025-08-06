@@ -130,6 +130,9 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
+### 0.0.7
+- highlight interpolated text ("hello #{user.name}" in Slim or "hello {{user.name}} in Trim")
+
 ### 0.0.6
 - improve syntax highlighting to cover multi-line comments
 
