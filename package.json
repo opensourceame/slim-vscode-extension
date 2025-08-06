@@ -163,7 +163,34 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/slim-vscode-extension.git"
+    "url": "https://github.com/opensourceame/slim-vscode-extension.git"
   },
-  "license": "MIT"
+  "homepage": "https://github.com/opensourceame/slim-vscode-extension",
+  "bugs": {
+    "url": "https://github.com/opensourceame/slim-vscode-extension/issues"
+  },
+  "license": "MIT",
+  "changelog": "https://github.com/opensourceame/slim-vscode-extension/blob/main/CHANGELOG.md",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#8360c2",
+    "theme": "dark"
+  },
+  "screenshots": [
+    {
+      "path": "images/screenshot-basic.png",
+      "description": "Slim syntax highlighting and code folding"
+    },
+    {
+      "path": "images/screenshot-formatting.png",
+      "description": "Slim formatting and indentation"
+    }
+  ],
+  "badges": [
+    {
+      "url": "https://img.shields.io/badge/version-0.0.7-blue.svg",
+      "href": "https://marketplace.visualstudio.com/items?itemName=opensourceame.slim-vscode-extension",
+      "description": "Version"
+    }
+  ]
 }

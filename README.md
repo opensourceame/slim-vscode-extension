@@ -55,7 +55,7 @@ The extension provides several configuration options:
 ## Usage
 
 ### Basic Slim Template
-```slim
+```
 doctype html
 html
   head
@@ -127,31 +127,3 @@ html                    # ← Folds entire document (14 lines)
 ## License
 
 MIT License - see LICENSE file for details.
-
-## Changelog
-
-### 0.0.7
-- highlight interpolated text ("hello #{user.name}" in Slim or "hello {{user.name}} in Trim")
-
-### 0.0.6
-- improve syntax highlighting to cover multi-line comments
-
-### 0.0.5
-- Added intelligent code folding based on content structure
-- Automatic folding ranges for blocks
-- Configurable folding threshold via settings
-- Nested folding support for complex templates
-
-### 0.0.4
-- Configurable formatting options
-- Support for both .slim and .trim file extensions
-
-### 0.0.3
-- Document and range formatting
-- Auto-indentation support
-
-### 0.0.2
-- Syntax highlighting for Slim and Trim templates
-
-### 0.0.1
-- Initial alpha release
