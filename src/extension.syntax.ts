@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { SlimSemanticTokenProvider } from './slim.semantic.token.provider';
+import { SlimDocumentSymbolProvider } from './slim.document.symbol.provider';
 import { SlimExtensionBase } from './extension.base';
 
 export class SlimExtensionSyntax extends SlimExtensionBase {
@@ -33,6 +34,12 @@ export class SlimExtensionSyntax extends SlimExtensionBase {
             legend
         );
 
+        const documentSymbolProvider = vscode.languages.registerDocumentSymbolProvider(
+            { language: 'slim' },
+            new SlimDocumentSymbolProvider()
+        );
+
         context.subscriptions.push(semanticTokenProvider);
+        context.subscriptions.push(documentSymbolProvider);
     }
 }

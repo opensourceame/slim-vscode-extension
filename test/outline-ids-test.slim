@@ -1,0 +1,84 @@
+doctype html
+html
+  head
+    title My Slim Page
+    meta name="viewport" content="width=device-width, initial-scale=1"
+    link rel="stylesheet" href="/styles.css"
+
+  body#main-body
+    header#site-header.main-header
+      h1#page-title Welcome to My Site
+      nav#main-navigation
+        a#home-link href="/" Home
+        a#about-link href="/about" About
+        a#contact-link href="/contact" Contact
+
+    main#main-content.content
+      section#hero-section.hero
+        h2#hero-title Hero Section
+        p#hero-description This is the main hero content
+
+        = link_to "Learn More", learn_more_path,
+          class: "btn btn-primary",
+          data: { turbo: false }
+
+      section#features-section.features
+        h2#features-title Features
+        .feature-grid#feature-container
+          .feature#feature-1
+            h3#feature-1-title Feature 1
+            p#feature-1-description Description of feature 1
+          .feature#feature-2
+            h3#feature-2-title Feature 2
+            p#feature-2-description Description of feature 2
+          .feature#feature-3
+            h3#feature-3-title Feature 3
+            p#feature-3-description Description of feature 3
+
+    ruby:
+      def current_user
+        OpenStruct.new(
+          id: 1,
+          name: "John Doe",
+          email: "john@example.com"
+        )
+      end
+
+      def format_user_info(user)
+        "#{user.name} (#{user.email})"
+      end
+
+    javascript:
+      function initializePage() {
+        console.log('Page initialized');
+
+        document.addEventListener('click', function(e) {
+          if (e.target.matches('.btn')) {
+            console.log('Button clicked');
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', initializePage);
+
+    css:
+      .main-header {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 3rem 1rem;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+      }
+
+    footer#site-footer
+      p#copyright-text &copy; 2024 My Site. All rights reserved.

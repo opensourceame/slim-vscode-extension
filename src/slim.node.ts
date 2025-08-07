@@ -426,6 +426,16 @@ export class SlimNode {
         return " ".repeat(this.depth * this.template.indentSize);
     }
 
+    public flatNodeList(): SlimNode[] {
+        const nodes: SlimNode[] = [];
+        for (const child of this.children) {
+            nodes.push(child);
+            nodes.push(...child.flatNodeList());
+        }
+
+        return nodes;
+    }
+
     public tree() {
         for (const child of this.children) {
             child.tree();
