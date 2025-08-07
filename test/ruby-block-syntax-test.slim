@@ -1,0 +1,80 @@
+ruby:
+  def current_user
+    OpenStruct.new(
+      id: 1,
+      name: "John Doe",
+      email: "john@example.com",
+      role: "admin"
+    )
+  end
+
+  def format_user_info(user)
+    "#{user.name} (#{user.role}) - #{user.email}"
+  end
+
+  def get_users_by_role(users, role)
+    users.select { |user| user.role == role }
+  end
+
+javascript:
+  function greetUser(name) {
+    console.log('Hello, ' + name + '!');
+    return 'Welcome to our site, ' + name;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const button = document.querySelector('#greet-button');
+    if (button) {
+      button.addEventListener('click', function() {
+        const name = prompt('Enter your name:');
+        if (name) {
+          alert(greetUser(name));
+        }
+      });
+    }
+  });
+
+css:
+  .highlight {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+  }
+
+  .success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+
+  .error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+
+scss:
+  $primary-color: #007bff;
+  $secondary-color: #6c757d;
+  $border-radius: 4px;
+
+  .card {
+    background: white;
+    border-radius: $border-radius;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin: 10px 0;
+
+    .card-header {
+      border-bottom: 1px solid #e9ecef;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+
+      h3 {
+        color: $primary-color;
+        margin: 0;
+      }
+    }
+  }

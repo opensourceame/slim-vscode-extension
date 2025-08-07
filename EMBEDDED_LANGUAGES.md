@@ -18,12 +18,13 @@ The extension supports the following embedded languages:
 - **CSS**: `css:` blocks
 - **SCSS**: `scss:` blocks
 - **Ruby**: `ruby:` blocks
+- **Inline Ruby**: Code after `=` symbols (e.g., `= f.password_field :password`)
 
 ## How It Works
 
 ### 1. Semantic Token Provider
 
-The semantic token provider (`src/slim.semantic.token.provider.ts`) detects embedded language blocks and skips processing them:
+The semantic token provider (`src/slim.semantic.token.provider.ts`) detects embedded language blocks and inline Ruby code, then skips processing them:
 
 ```typescript
 private detectEmbeddedLanguageBlocks(document: vscode.TextDocument): Array<{ startLine: number, endLine: number, language: string }> {
@@ -61,23 +62,26 @@ The TextMate grammar (`syntaxes/slim.tmLanguage.json`) provides syntax highlight
 
 ```json
 {
-  "name": "source.javascript.embedded.slim",
-  "begin": "^\\s*(javascript:)",
+  "name": "source.ruby.embedded.slim",
+  "begin": "^\\s*(ruby:)",
   "end": "^\\s*(end)",
   "beginCaptures": {
-    "1": { "name": "keyword.control.javascript.slim" }
+    "1": { "name": "keyword.control.ruby.slim" }
   },
   "endCaptures": {
-    "1": { "name": "keyword.control.javascript.slim" }
+    "1": { "name": "keyword.control.ruby.slim" }
   },
+  "contentName": "source.ruby",
   "patterns": [
     {
-      "name": "source.javascript",
+      "name": "source.ruby",
       "match": ".*"
     }
   ]
 }
 ```
+
+The `contentName` property ensures that all content within the block is treated as Ruby code, providing proper syntax highlighting for multi-line Ruby blocks.
 
 ### 3. Language Detection in SlimNode
 
@@ -97,6 +101,44 @@ if (trimmed == 'css:') {
 if (trimmed == 'scss:') {
     this.type = "css";
     return;
+}
+```
+
+### 4. Inline Ruby Code Detection
+
+The semantic token provider also detects inline Ruby code that appears after `=` symbols:
+
+```typescript
+private detectInlineRubyRanges(document: vscode.TextDocument): Array<{ lineNumber: number, startChar: number, endChar: number }> {
+    const ranges: Array<{ lineNumber: number, startChar: number, endChar: number }> = [];
+    const lines = document.getText().split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        // Check for inline Ruby code (starts with =)
+        if (trimmed.startsWith('=')) {
+            const equalsIndex = line.indexOf('=');
+            if (equalsIndex !== -1) {
+                // Find the start of Ruby code (after = and any whitespace)
+                let rubyStart = equalsIndex + 1;
+                while (rubyStart < line.length && /\s/.test(line[rubyStart])) {
+                    rubyStart++;
+                }
+
+                if (rubyStart < line.length) {
+                    ranges.push({
+                        lineNumber: i + 1,
+                        startChar: rubyStart,
+                        endChar: line.length
+                    });
+                }
+            }
+        }
+    }
+
+    return ranges;
 }
 ```
 
@@ -195,6 +237,30 @@ ruby:
   end
 ```
 
+### Inline Ruby Code
+
+```slim
+= f.password_field :password,
+ autocomplete: "off",
+ placeholder: "Password",
+ class: password_class
+
+= f.text_field :email,
+ autocomplete: "email",
+ placeholder: "Email address",
+ class: email_class
+
+= f.submit "Sign In",
+ class: "btn btn-primary",
+ data: { disable_with: "Signing in..." }
+
+= link_to "Forgot Password?",
+ new_password_reset_path,
+ class: "forgot-password-link"
+
+= render partial: "shared/flash_messages"
+```
+
 ## Benefits
 
 1. **Proper Syntax Highlighting**: Embedded code gets the correct syntax highlighting for its language
@@ -240,4 +306,3 @@ You can test embedded language support by:
 4. Confirming that syntax errors are detected in embedded code
 
 See `examples/embedded-languages.slim` for a comprehensive example.
-

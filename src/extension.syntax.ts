@@ -19,6 +19,7 @@ export class SlimExtensionSyntax extends SlimExtensionBase {
                 'logic',
                 'namespace',
                 'operator',
+                'ruby',
                 'tag',
                 'text',
                 'variable'

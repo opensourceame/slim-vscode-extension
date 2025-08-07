@@ -1,0 +1,32 @@
+ruby:
+  def current_user
+    OpenStruct.new
+  end
+
+javascript:
+  function greetUser(name) {
+    console.log('Hello, ' + name + '!');
+    return 'Welcome to our site, ' + name;
+  }
+
+css:
+  .highlight {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+  }
+
+scss:
+  $primary-color: #007bff;
+  $secondary-color: #6c757d;
+  $border-radius: 4px;
+
+  .card {
+    background: white;
+    border-radius: $border-radius;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin: 10px 0;
+  }

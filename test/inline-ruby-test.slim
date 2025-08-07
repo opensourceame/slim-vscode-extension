@@ -1,0 +1,33 @@
+= f.password_field :password,
+ autocomplete: "off",
+ placeholder: "Password",
+ class: password_class
+
+= f.text_field :email,
+ autocomplete: "email",
+ placeholder: "Email address",
+ class: email_class
+
+= f.submit "Sign In",
+ class: "btn btn-primary",
+ data: { disable_with: "Signing in..." }
+
+= link_to "Forgot Password?",
+ new_password_reset_path,
+ class: "forgot-password-link"
+
+= render partial: "shared/flash_messages"
+
+= content_for :javascript do
+  javascript:
+    console.log("Form validation script");
+    document.addEventListener('DOMContentLoaded', function() {
+      // JavaScript code here
+    });
+
+= content_for :styles do
+  css:
+    .form-container {
+      max-width: 400px;
+      margin: 0 auto;
+    }
