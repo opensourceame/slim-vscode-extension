@@ -2,7 +2,7 @@
   "name": "slim-vscode-extension",
   "displayName": "Slim / Trim Language Support",
   "description": "Syntax highlighting, code folding and formatting for Slim and Trim templates",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "opensourceame",
   "engines": {
     "vscode": "^1.60.0"
@@ -110,13 +110,18 @@
         },
         "slim.formatOnSave": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Format Slim files on save"
         },
         "slim.codeFoldingDepth": {
           "type": "number",
-          "default": 5,
+          "default": 2,
           "description": "Minimum number of lines that can be folded"
+        },
+        "slim.preserveNonSlimIndentation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Preserve non-Slim indentation when formatting (CSS, JavaScript, etc.)"
         }
       }
     }
@@ -128,7 +133,9 @@
     "pretest": "echo 'Skipping compilation for direct TypeScript execution'",
     "test": "tsx test-simple.ts",
     "test:watch": "mocha --watch",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
   "mocha": {
     "require": [
@@ -179,9 +186,11 @@
   ],
   "badges": [
     {
-      "url": "https://img.shields.io/badge/version-0.0.7-blue.svg",
+      "url": "https://img.shields.io/badge/version-0.1.0-blue.svg",
       "href": "https://marketplace.visualstudio.com/items?itemName=opensourceame.slim-vscode-extension",
       "description": "Version"
     }
-  ]
+  ],
+  "markdown": "github",
+  "qna": "https://github.com/opensourceame/slim-vscode-extension/issues"
 }

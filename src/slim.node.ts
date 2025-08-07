@@ -1,3 +1,4 @@
+import { SlimTemplate } from "./slim.template";
 
 // Import boolean attributes from SlimTemplate
 const BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'multiple', 'ismap', 'defer', 'declare', 'noresize', 'nowrap'];
@@ -15,30 +16,33 @@ const TOKEN_MAP = {
     'javascript': 'namespace',
     'javascript-block': 'text',
     'label': 'label',
+    'logic': 'ruby',
     'namespace': 'namespace',
     'scss': 'namespace',
     'scss-block': 'text',
     'operator': 'operator',
+    'ruby': '',
+    'ruby-block': '',
     'tag': 'tag',
     'text': 'text',
     'variable': 'variable',
 };
-const PRESERVE_BLOCK_TYPES = ['comment', 'javascript', 'css', 'scss'];
+const PRESERVE_BLOCK_TYPES = ['comment', 'javascript', 'css', 'scss', 'ruby'];
 
 export class SlimNode {
     public id: string | null;
-    public classes: string[];
+    public type: string;
     public tag: string;
     public depth: number;
     public indentation: number;
     public children: SlimNode[];
     public parent: SlimNode | null;
     public attributes: string[];
-    public type: string;
     public content: string;
     public line: string;
     public blankLinesAbove: number;
     public lineNumber: number;
+    public template: SlimTemplate;
 
     constructor(line: string, lineNumber: number = 0) {
         this.depth = null;
@@ -51,7 +55,6 @@ export class SlimNode {
         this.attributes = [];
         this.tag = "";
         this.type = "";
-        this.classes = [];
         this.blankLinesAbove = 0;
         this.lineNumber = lineNumber;
 
@@ -82,10 +85,18 @@ export class SlimNode {
             return;
         }
 
+        if (trimmed == 'ruby:') {
+            this.type = "ruby";
+            return;
+        }
 
         if (trimmed.startsWith("/")) {
             this.type = "comment";
             return;
+        }
+
+        if (trimmed.startsWith("- ") || trimmed.startsWith("= ")) {
+            this.type = "logic";
         }
 
         // Find the tag name (first word that's not a special character)
@@ -102,12 +113,6 @@ export class SlimNode {
             this.id = idMatch[1];
         }
 
-        // Parse classes (start with .)
-        const classMatches = trimmed.match(/\.([a-zA-Z0-9_-]+)/g);
-        if (classMatches) {
-            this.classes = classMatches.map(match => match.substring(1));
-        }
-
         // Parse attributes (in square brackets or key=value pairs)
         const attrMatches = trimmed.match(/\[([^\]]+)\]/g);
         if (attrMatches) {
@@ -116,8 +121,9 @@ export class SlimNode {
     }
 
     public addChild(child: SlimNode) {
-        child.depth  = this.depth + 1;
-        child.parent = this;
+        child.depth    = this.depth + 1;
+        child.parent   = this;
+        child.template = this.template;
 
         if (PRESERVE_BLOCK_TYPES.includes(this.type)) {
             child.type = this.type + "-block";
@@ -138,6 +144,10 @@ export class SlimNode {
                 this.content.length,
                 this.content
             )];
+        }
+
+        if (this.isLogicNode()) {
+            return this.parseTextRanges(this.content, 0, this.content.length);
         }
 
         if (this.isBlockNode()) {
@@ -354,6 +364,10 @@ export class SlimNode {
         const ranges: SlimNodeRange[] = [];
         let currentPos = start;
 
+        if (text.startsWith("=")) {
+            return [new SlimNodeRange("ruby", start, end, text)];
+        }
+
         // Split by #{...} and {{...}} patterns, keeping the delimiters
         const parts = text.split(/(#\{[^}]*\}|\{\{[^}]*\}\})/g);
 
@@ -397,17 +411,19 @@ export class SlimNode {
 
     private whitespace() {
         if (this.depth < 1) {
+            console.log(this.template);
             return "";
         }
 
-        if (this.isBlockNode()) {
-            const indentation = this.indentation - this.parent.indentation;
-            console.log(this);
-            console.log(this.tokenType());
-            return this.parent.whitespace() + " ".repeat(indentation);
+        if (this.isBlockNode() && this.template.preserveNonSlimIndentation) {
+            return this.parent.whitespace() + " ".repeat(this.indentation - this.parent.indentation);
         }
 
-        return "  ".repeat(this.depth);
+        if (this.template.useTabs) {
+            return "\t".repeat(this.depth);
+        }
+
+        return " ".repeat(this.depth * this.template.indentSize);
     }
 
     public tree() {
@@ -441,15 +457,14 @@ export class SlimNode {
         return maxEndLine;
     }
 
-    public getFoldingRanges(minLines: number = 5): Array<{ start: number, end: number, tag: string }> {
+    public getFoldingRanges(minLines: number = 1): Array<{ start: number, end: number, tag: string }> {
         const ranges: Array<{ start: number, end: number, tag: string }> = [];
 
-        // Check if this node has more than 5 lines in its block
         const blockLines = this.blockLines(0);
         if (blockLines > minLines && !this.isRootNode()) {
             ranges.push({
-                start: this.lineNumber,
-                end: this.getEndLine(),
+                start: this.lineNumber - 1,
+                end: this.getEndLine() - 1,
                 tag: this.tag
             });
         }
@@ -470,6 +485,10 @@ export class SlimNode {
         return this.type.endsWith("-block");
     }
 
+    public isLogicNode() {
+        return this.type.startsWith("logic");
+    }
+
     public getLineRanges(lineRanges: Array<SlimLineRange> = []): Array<SlimLineRange> {
         if (!this.isRootNode()) {
             lineRanges.push(new SlimLineRange(this.lineNumber, this, this.ranges() as SlimNodeRange[]));
@@ -488,11 +507,12 @@ export class SlimNode {
 }
 
 export class SlimRootNode extends SlimNode {
-    constructor() {
+    constructor(template: SlimTemplate) {
         super("");
         this.depth = -1;
         this.indentation = 0;
         this.tag = "root";
+        this.template = template;
     }
 }
 

@@ -1,13 +1,28 @@
 import * as fs from 'fs';
 import { SlimNode, SlimRootNode } from './slim.node';
+import { SlimExtensionBase } from './extension.base';
+import * as vscode from 'vscode';
 
-export class SlimTemplate {
+export class SlimTemplate extends SlimExtensionBase {
     public root: SlimRootNode;
-    public indentSize: number = 2;
+    public indentSize: number;
+    public preserveNonSlimIndentation: boolean;
+    public useTabs: boolean;
+
     protected static BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'multiple', 'ismap', 'defer', 'declare', 'noresize', 'nowrap'];
 
     constructor(template: string) {
+        super();
+
         this.parseLines(template.split('\n'));
+
+        this.indentSize                 = this.getConfig('indentSize') as number;
+        this.preserveNonSlimIndentation = this.getConfig('preserveNonSlimIndentation') as boolean;
+        this.useTabs                    = this.getConfig('useTabs') as boolean;
+    }
+
+    public getConfig(key: string) {
+        return vscode.workspace.getConfiguration('slim').get(key);
     }
 
     public render(): string {
@@ -24,7 +39,7 @@ export class SlimTemplate {
     }
 
     private parseLines(lines: string[]) {
-        const root  = new SlimRootNode();
+        const root  = new SlimRootNode(this);
         const nodes = [];
         this.root = root;
 

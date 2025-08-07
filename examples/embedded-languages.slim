@@ -1,0 +1,185 @@
+doctype html
+html lang="en"
+  head
+    title Embedded Languages Example
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1"
+
+    css:
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .header {
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      .code-block {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+        padding: 15px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+      }
+
+      .language-label {
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 5px;
+      }
+
+  body
+    .container
+      .header
+        h1 Embedded Languages in Slim
+        p This example demonstrates how different languages are embedded in Slim templates
+
+      section
+        h2 JavaScript Example
+        .code-block
+          .language-label JavaScript:
+          javascript:
+            // JavaScript code embedded in Slim
+            function greetUser(name) {
+              console.log('Hello, ' + name + '!');
+              return 'Welcome to our site, ' + name;
+            }
+
+            // Event handling
+            document.addEventListener('DOMContentLoaded', function() {
+              const button = document.querySelector('#greet-button');
+              if (button) {
+                button.addEventListener('click', function() {
+                  const name = prompt('Enter your name:');
+                  if (name) {
+                    alert(greetUser(name));
+                  }
+                });
+              }
+            });
+
+      section
+        h2 CSS Example
+        .code-block
+          .language-label CSS:
+          css:
+            /* Custom styles for this page */
+            .highlight {
+              background-color: #fff3cd;
+              border: 1px solid #ffeaa7;
+              border-radius: 4px;
+              padding: 10px;
+              margin: 10px 0;
+            }
+
+            .success {
+              color: #155724;
+              background-color: #d4edda;
+              border-color: #c3e6cb;
+            }
+
+            .error {
+              color: #721c24;
+              background-color: #f8d7da;
+              border-color: #f5c6cb;
+            }
+
+      section
+        h2 SCSS Example
+        .code-block
+          .language-label SCSS:
+          scss:
+            // SCSS with nested rules and variables
+            $primary-color: #007bff;
+            $secondary-color: #6c757d;
+            $border-radius: 4px;
+
+            .card {
+              background: white;
+              border-radius: $border-radius;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              padding: 20px;
+              margin: 10px 0;
+
+              .card-header {
+                border-bottom: 1px solid #e9ecef;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+
+                h3 {
+                  color: $primary-color;
+                  margin: 0;
+                }
+              }
+
+              .card-body {
+                color: $secondary-color;
+
+                p {
+                  margin: 10px 0;
+                  line-height: 1.6;
+                }
+              }
+
+              .card-footer {
+                border-top: 1px solid #e9ecef;
+                padding-top: 10px;
+                margin-top: 15px;
+                text-align: right;
+              }
+            }
+
+      section
+        h2 Ruby Example
+        .code-block
+          .language-label Ruby:
+          ruby:
+            # Ruby code embedded in Slim
+            users = [
+              { name: 'Alice', role: 'admin', email: 'alice@example.com' },
+              { name: 'Bob', role: 'user', email: 'bob@example.com' },
+              { name: 'Charlie', role: 'moderator', email: 'charlie@example.com' }
+            ]
+
+            def format_user_info(user)
+              "#{user[:name]} (#{user[:role]}) - #{user[:email]}"
+            end
+
+            def get_users_by_role(users, role)
+              users.select { |user| user[:role] == role }
+            end
+
+            # Process users
+            admin_users = get_users_by_role(users, 'admin')
+            regular_users = get_users_by_role(users, 'user')
+
+            puts "Admins: #{admin_users.map { |u| u[:name] }.join(', ')}"
+            puts "Regular users: #{regular_users.map { |u| u[:name] }.join(', ')}"
+
+      section
+        h2 Interactive Elements
+        .highlight
+          p This section demonstrates how embedded languages work together
+
+          button#greet-button.btn.btn-primary Click to Greet
+
+          .alert.alert-info
+            p The semantic token provider will skip processing lines inside embedded language blocks, allowing VS Code's built-in language services to handle syntax highlighting for JavaScript, CSS, SCSS, and Ruby code.
+
+          .alert.alert-success
+            p This provides proper syntax highlighting, IntelliSense, and error checking for embedded code while maintaining Slim's template structure.

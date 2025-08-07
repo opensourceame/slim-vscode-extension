@@ -1,0 +1,37 @@
+# Source files
+src/**
+tsconfig.json
+tsconfig.test.json
+tsx
+test-simple.ts
+test-slim-parser.js
+test-brackets.slim
+render.ts
+output.html
+
+# Development files
+.vscode/**
+.git/**
+.gitignore
+node_modules/**
+*.vsix
+*.log
+
+# Documentation
+EMBEDDED_LANGUAGES.md
+INSTALLATION.md
+CHANGELOG.md
+README.md
+
+# Archive files
+archive/**
+
+# Test files
+test/**
+
+# Build artifacts
+out/**
+!out/src/extension.js
+
+# Package files
+package-lock.json
