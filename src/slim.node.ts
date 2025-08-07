@@ -491,6 +491,10 @@ export class SlimNode {
         return this.tag == "root";
     }
 
+    public isBlockParentNode() {
+        return PRESERVE_BLOCK_TYPES.includes(this.type);
+    }
+
     public isBlockNode() {
         return this.type.endsWith("-block");
     }

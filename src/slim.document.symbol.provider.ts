@@ -12,15 +12,26 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
         const nodes: SlimNode[] = root.flatNodeList();
 
         const idSymbols = this.findNodesWithIds(nodes);
+        const blocksSymbols = this.findBlocks(nodes);
 
-        if (idSymbols.length === 0) {
-            return [];
-        }
+        const idsParent = this.createParentSymbol(document, idSymbols, 'Elements with IDs');
+        const blocksParent = this.createParentSymbol(document, blocksSymbols, 'Blocks');
 
-        // Create a parent symbol that contains all ID symbols
-        const parentSymbol = this.createParentSymbol(document, idSymbols);
+        return [idsParent, blocksParent];
+    }
 
-        return [parentSymbol];
+    private findBlocks(nodes: SlimNode[]): vscode.DocumentSymbol[] {
+        const blockNodes: SlimNode[] = [];
+
+        nodes.map(node => {
+            if (node.isBlockParentNode()) {
+                blockNodes.push(node);
+            }
+        });
+
+        return blockNodes.map(node => this.createSymbol(node)).sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
     }
 
     private findNodesWithIds(nodes: SlimNode[]): vscode.DocumentSymbol[] {
@@ -52,20 +63,7 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
         return idNodes.map(node => this.createSymbol(node));
     }
 
-    private collectNodesWithIds(node: any, nodesWithIds: any[]): void {
-        for (const child of node.children) {
-            if (child.isBlockNode()) {
-                continue;
-            }
-
-            if (child.id && child.id !== '') {
-                nodesWithIds.push(child);
-            }
-            this.collectNodesWithIds(child, nodesWithIds);
-        }
-    }
-
-    private createParentSymbol(document: vscode.TextDocument, childSymbols: vscode.DocumentSymbol[]): vscode.DocumentSymbol {
+    private createParentSymbol(document: vscode.TextDocument, childSymbols: vscode.DocumentSymbol[], name: string): vscode.DocumentSymbol {
         // Create a range that spans the entire document
         const range = new vscode.Range(
             0, 0,
@@ -75,7 +73,7 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
         const selectionRange = new vscode.Range(0, 0, 0, 0);
 
         const parentSymbol = new vscode.DocumentSymbol(
-            'Elements with IDs',
+            name,
             `${childSymbols.length} elements`,
             vscode.SymbolKind.Class,
             range,
@@ -99,7 +97,14 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
             node.lineNumber - 1, node.content.length
         );
 
-        const name = `#${node.id} ${node.tag}`;
+        let name: string;
+
+        if (node.isBlockParentNode()) {
+            name = node.type;
+        } else {
+            name = `#${node.id} ${node.tag}`;
+        }
+
         const detail = `Line ${node.lineNumber}`;
         const kind = this.getSymbolKind(node);
 
@@ -143,6 +148,12 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
             case 'article':
             case 'aside':
                 return vscode.SymbolKind.Namespace; // Structural elements
+            case 'javascript':
+            case 'css':
+            case 'scss':
+                return vscode.SymbolKind.File; // Code files
+            case 'comment':
+                return vscode.SymbolKind.Event; // Comments
             default:
                 return vscode.SymbolKind.Variable; // Default
         }
