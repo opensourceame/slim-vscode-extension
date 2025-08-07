@@ -1,0 +1,48 @@
+doctype html
+html
+  head
+    title = "My Slim Page"
+    meta name="viewport" content="width=device-width, initial-scale=1"
+    = stylesheet_link_tag "application", media: "all"
+    = javascript_include_tag "application"
+
+  body
+    .container
+      h1 = "Welcome to Slim"
+
+      - if user_signed_in?
+        p = "Hello, #{current_user.name}!"
+        = link_to "Logout", logout_path, method: :delete, class: "btn btn-danger"
+      - else
+        p = "Please sign in to continue"
+        = link_to "Login", login_path, class: "btn btn-primary"
+
+      .content
+        - posts.each do |post|
+          .post
+            h2 = post.title
+            p = post.content
+            - if post.published?
+              span.badge.badge-success Published
+            - else
+              span.badge.badge-warning Draft
+
+      javascript:
+        console.log("This is JavaScript code");
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log("Page loaded!");
+        });
+
+      css:
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+
+        .post {
+          border: 1px solid #ddd;
+          padding: 15px;
+          margin-bottom: 20px;
+          border-radius: 5px;
+        }

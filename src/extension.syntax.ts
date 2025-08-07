@@ -25,7 +25,7 @@ export class SlimExtensionSyntax extends SlimExtensionBase {
                 'text',
                 'variable'
             ],
-            []
+            ['embeddedLanguage'] // Add modifier for embedded language support
         );
 
         const semanticTokenProvider = vscode.languages.registerDocumentSemanticTokensProvider(
