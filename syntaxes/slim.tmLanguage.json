@@ -199,7 +199,7 @@
           ]
         },
         {
-          "name": "source.ruby.embedded.slim",
+          "name": "source.javascript.embedded.slim",
           "begin": "^\\s*(javascript:)",
           "end": "^\\s*(end)",
           "beginCaptures": {
@@ -216,7 +216,7 @@
           ]
         },
         {
-          "name": "source.ruby.embedded.slim",
+          "name": "source.css.embedded.slim",
           "begin": "^\\s*(css:)",
           "end": "^\\s*(end)",
           "beginCaptures": {
@@ -228,6 +228,23 @@
           "patterns": [
             {
               "name": "source.css",
+              "match": ".*"
+            }
+          ]
+        },
+        {
+          "name": "source.scss.embedded.slim",
+          "begin": "^\\s*(scss:)",
+          "end": "^\\s*(end)",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.scss.slim" }
+          },
+          "endCaptures": {
+            "1": { "name": "keyword.control.scss.slim" }
+          },
+          "patterns": [
+            {
+              "name": "source.scss",
               "match": ".*"
             }
           ]

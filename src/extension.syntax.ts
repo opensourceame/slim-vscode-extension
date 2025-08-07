@@ -16,6 +16,7 @@ export class SlimExtensionSyntax extends SlimExtensionBase {
                 'comment',
                 'doctype',
                 'id',
+                'logic',
                 'namespace',
                 'operator',
                 'tag',

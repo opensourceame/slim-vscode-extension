@@ -17,7 +17,15 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
         const root = template.root;
         const lineRanges = root.getLineRanges();
 
+        // Track embedded language blocks to skip them
+        const embeddedBlocks = this.detectEmbeddedLanguageBlocks(document);
+
         for (const lineRange of lineRanges) {
+            // Skip if this line is inside an embedded language block
+            if (this.isLineInEmbeddedBlock(lineRange.lineNumber, embeddedBlocks)) {
+                continue;
+            }
+
             lineRange.ranges.forEach(range => {
                 tokensBuilder.push(
                     lineRange.lineNumber - 1, // line numbers are 1-indexed, but semantic tokens are 0-indexed
@@ -28,6 +36,49 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
             });
         }
 
+        console.log(lineRanges);
+
         return tokensBuilder.build();
+    }
+
+    /**
+     * Detects embedded language blocks in the document
+     * Returns an array of { startLine, endLine, language } objects
+     */
+    private detectEmbeddedLanguageBlocks(document: vscode.TextDocument): Array<{ startLine: number, endLine: number, language: string }> {
+        const blocks: Array<{ startLine: number, endLine: number, language: string }> = [];
+        const lines = document.getText().split('\n');
+
+        let currentBlock: { startLine: number, language: string } | null = null;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+
+            // Check for embedded language start
+            if (line === 'javascript:' || line === 'css:' || line === 'scss:' || line === 'ruby:') {
+                const language = line.replace(':', '');
+                currentBlock = { startLine: i + 1, language };
+            }
+            // Check for embedded language end
+            else if (line === 'end' && currentBlock) {
+                blocks.push({
+                    startLine: currentBlock.startLine,
+                    endLine: i + 1,
+                    language: currentBlock.language
+                });
+                currentBlock = null;
+            }
+        }
+
+        return blocks;
+    }
+
+    /**
+     * Checks if a line number is inside an embedded language block
+     */
+    private isLineInEmbeddedBlock(lineNumber: number, embeddedBlocks: Array<{ startLine: number, endLine: number, language: string }>): boolean {
+        return embeddedBlocks.some(block =>
+            lineNumber >= block.startLine && lineNumber <= block.endLine
+        );
     }
 }

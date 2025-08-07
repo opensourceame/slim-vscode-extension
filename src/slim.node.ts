@@ -15,15 +15,17 @@ const TOKEN_MAP = {
     'javascript': 'namespace',
     'javascript-block': 'text',
     'label': 'label',
+    'logic': 'keyword',
     'namespace': 'namespace',
     'scss': 'namespace',
     'scss-block': 'text',
     'operator': 'operator',
+    'ruby': 'text',
     'tag': 'tag',
     'text': 'text',
     'variable': 'variable',
 };
-const PRESERVE_BLOCK_TYPES = ['comment', 'javascript', 'css', 'scss'];
+const PRESERVE_BLOCK_TYPES = ['comment', 'javascript', 'css', 'scss', 'ruby'];
 
 export class SlimNode {
     public id: string | null;
@@ -82,10 +84,18 @@ export class SlimNode {
             return;
         }
 
+        if (trimmed == 'ruby:') {
+            this.type = "ruby";
+            return;
+        }
 
         if (trimmed.startsWith("/")) {
             this.type = "comment";
             return;
+        }
+
+        if (trimmed.startsWith("- ") || trimmed.startsWith("= ")) {
+            this.type = "logic";
         }
 
         // Find the tag name (first word that's not a special character)
@@ -138,6 +148,10 @@ export class SlimNode {
                 this.content.length,
                 this.content
             )];
+        }
+
+        if (this.isLogicNode()) {
+            return this.parseTextRanges(this.content, 0, this.content.length);
         }
 
         if (this.isBlockNode()) {
@@ -441,15 +455,14 @@ export class SlimNode {
         return maxEndLine;
     }
 
-    public getFoldingRanges(minLines: number = 5): Array<{ start: number, end: number, tag: string }> {
+    public getFoldingRanges(minLines: number = 1): Array<{ start: number, end: number, tag: string }> {
         const ranges: Array<{ start: number, end: number, tag: string }> = [];
 
-        // Check if this node has more than 5 lines in its block
         const blockLines = this.blockLines(0);
         if (blockLines > minLines && !this.isRootNode()) {
             ranges.push({
-                start: this.lineNumber,
-                end: this.getEndLine(),
+                start: this.lineNumber - 1,
+                end: this.getEndLine() - 1,
                 tag: this.tag
             });
         }
@@ -458,7 +471,7 @@ export class SlimNode {
         for (const child of this.children) {
             ranges.push(...child.getFoldingRanges());
         }
-
+console.log(ranges);
         return ranges;
     }
 
@@ -468,6 +481,10 @@ export class SlimNode {
 
     public isBlockNode() {
         return this.type.endsWith("-block");
+    }
+
+    public isLogicNode() {
+        return this.type.startsWith("logic");
     }
 
     public getLineRanges(lineRanges: Array<SlimLineRange> = []): Array<SlimLineRange> {
