@@ -26,6 +26,10 @@ A comprehensive VS Code extension that provides syntax highlighting, formatting 
 - **Nested Folding**: Supports nested folding ranges for complex templates
 - **Visual Indicators**: Clear fold markers for easy navigation
 
+### Document Outline
+- **Elements with IDs**: quickly jump to any element with an ID from an alphabetical list
+- **Blocks**: jump to declarations of non-Slim blocks (CSS, Javascript, etc.)
+
 ## Installation
 
 ### From Source
@@ -58,9 +62,7 @@ The extension provides several configuration options:
 
 ![Basic Slim Template](images/screenshot-basic.png)
 
-
 ### Formatting
-
 
 - `Format Document` (Shift+Alt+F): Format the entire document
 - `Format Selection` (Ctrl+K Ctrl+F): Format selected text
@@ -68,12 +70,13 @@ The extension provides several configuration options:
 
 ![Formatting Commands](images/screenshot-formatting.png)
 
+### Outline
+
+![Outline](images/screenshot-outline.png)
+
 ### Code folding
 
 **Folding Behavior:**
-- Blocks with 5+ lines automatically get folding ranges
-- Nested blocks create multiple folding levels
-- Smaller blocks (≤5 lines) remain unfolded for quick access
 - Adjust the threshold via `slim.codeFoldingDepth` setting
 
 ## Supported File Types
@@ -94,4 +97,5 @@ The extension provides several configuration options:
 ## License
 
 (c) David Kelly 2025
+
 MIT License - see LICENSE file for details.
