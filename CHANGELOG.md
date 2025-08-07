@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Corrected an issue with code folding and set the default folding depth to 2 lines
 - Rendering with tabs works properly
+- Preserve original indentation on non-Slim blocks (Javascript, CSS etc.)
 
 ## [0.1.0] - 2025-08-06
 - support javascript and css/scss blocks

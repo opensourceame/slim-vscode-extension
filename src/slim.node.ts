@@ -415,7 +415,7 @@ export class SlimNode {
             return "";
         }
 
-        if (this.isBlockNode() && !this.template.preserveNonSlimIndentation) {
+        if (this.isBlockNode() && this.template.preserveNonSlimIndentation) {
             return this.parent.whitespace() + " ".repeat(this.indentation - this.parent.indentation);
         }
 
