@@ -2,6 +2,22 @@ import * as vscode from 'vscode';
 import { SlimTemplate } from './slim.template';
 import { SlimNode } from './slim.node';
 
+const MAJOR_TAGS = [
+    'article',
+    'div',
+    'footer',
+    'form',
+    'header',
+    'main',
+    'nav',
+    'ol',
+    'script',
+    'section',
+    'style',
+    'table',
+    'ul'
+];
+
 export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
     provideDocumentSymbols(
         document: vscode.TextDocument,
@@ -13,13 +29,32 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
 
         const idSymbols = this.findNodesWithIds(nodes);
         const blocksSymbols = this.findBlocks(nodes);
+        const majorTagsSymbols = this.findMajorTags(nodes);
 
         const idsParent = this.createParentSymbol(document, idSymbols, 'Elements with IDs');
         const blocksParent = this.createParentSymbol(document, blocksSymbols, 'Blocks');
+        const majorTagsParent = this.createParentSymbol(document, majorTagsSymbols, 'Major Tags');
 
-        return [idsParent, blocksParent];
+        return [idsParent, blocksParent, majorTagsParent];
     }
 
+    private findMajorTags(nodes: SlimNode[]): vscode.DocumentSymbol[] {
+        const majorTags: SlimNode[] = [];
+
+        nodes.map(node => {
+            if (node.isBlockNode()) {
+                return;
+            }
+
+            if (MAJOR_TAGS.includes(node.tag)) {
+                majorTags.push(node);
+            }
+        });
+
+        return majorTags.map(node => this.createSymbol(node)).sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
+    }
     private findBlocks(nodes: SlimNode[]): vscode.DocumentSymbol[] {
         const blockNodes: SlimNode[] = [];
 
@@ -102,7 +137,11 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
         if (node.isBlockParentNode()) {
             name = node.type;
         } else {
-            name = `#${node.id} ${node.tag}`;
+            if (node.id && node.id !== '') {
+                name = `#${node.id} ${node.tag}`;
+            } else {
+                name = node.tag;
+            }
         }
 
         const detail = `Line ${node.lineNumber}`;
