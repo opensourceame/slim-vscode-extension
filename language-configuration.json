@@ -23,7 +23,10 @@
         ["'", "'"]
     ],
     "embeddedLanguages": {
-        "ruby": "ruby"
+        "ruby": "ruby",
+        "javascript": "javascript",
+        "css": "css",
+        "scss": "scss"
     },
     "tokenTypes": {
         "ruby": "embeddedLanguage"

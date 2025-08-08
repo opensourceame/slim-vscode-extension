@@ -2,7 +2,7 @@
   "name": "slim-vscode-extension",
   "displayName": "Slim / Trim Language Support",
   "description": "Syntax highlighting, code folding and formatting for Slim and Trim templates",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "opensourceame",
   "engines": {
     "vscode": "^1.60.0"
@@ -23,12 +23,7 @@
     "highlighting"
   ],
   "activationEvents": [
-    "onLanguage:slim",
-    "onCommand:slim.testFormatter",
-    "onCommand:slim.checkFormatters",
-    "onCommand:slim.forceFormat",
-    "onCommand:slim.debugWorkspace",
-    "onCommand:slim.debugSemanticTokens"
+    "onLanguage:slim"
   ],
   "main": "./out/src/extension.js",
   "contributes": {
