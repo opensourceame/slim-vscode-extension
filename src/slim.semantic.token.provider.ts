@@ -41,7 +41,8 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
             });
         }
 
-        console.log(lineRanges);
+        // uncomment when debugging syntax highlighting
+        // console.log(lineRanges);
 
         return tokensBuilder.build();
     }

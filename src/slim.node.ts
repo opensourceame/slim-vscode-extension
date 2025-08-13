@@ -411,7 +411,6 @@ export class SlimNode {
 
     private whitespace() {
         if (this.depth < 1) {
-            console.log(this.template);
             return "";
         }
 
