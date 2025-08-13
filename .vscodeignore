@@ -27,9 +27,9 @@ archive/**
 # Test files
 test/**
 
-# Build artifacts
-out/**
-!out/src/extension.js
+# Build artifacts - exclude test files but include all src files
+out/test/**
+!out/src/**
 
 # Package files
 package-lock.json
