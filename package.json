@@ -176,12 +176,20 @@
   },
   "screenshots": [
     {
-      "path": "images/screenshot-basic.png",
+      "path": "images/screenshot-syntax.png",
       "description": "Slim syntax highlighting and code folding"
     },
     {
       "path": "images/screenshot-formatting.png",
       "description": "Slim formatting and indentation"
+    },
+    {
+      "path": "images/screenshot-settings.png",
+      "description": "Extension configuration settings"
+    },
+    {
+      "path": "images/screenshot-outline.png",
+      "description": "Document outline and navigation"
     }
   ],
   "badges": [
