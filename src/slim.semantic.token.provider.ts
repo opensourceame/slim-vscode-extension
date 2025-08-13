@@ -21,13 +21,13 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
             lineRange.ranges.forEach(range => {
                 // Check if this is a Ruby code section that should use embedded language
                 if (this.shouldUseEmbeddedRuby(range)) {
-                    // Mark this range as embedded Ruby language with the embeddedLanguage modifier
+                    // Mark tIn his range as embedded Ruby language with the embeddedLanguage modifier
                     const embeddedLanguageModifier = this.legend.tokenModifiers.indexOf('embeddedLanguage');
                     tokensBuilder.push(
                         lineRange.lineNumber - 1, // line numbers are 1-indexed, but semantic tokens are 0-indexed
                         range.start,
                         range.end - range.start,
-                        this.legend.tokenTypes.indexOf('ruby'),
+                        this.legend.tokenTypes.indexOf('text'),
                         embeddedLanguageModifier >= 0 ? (1 << embeddedLanguageModifier) : 0
                     );
                 } else {
@@ -41,16 +41,14 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
             });
         }
 
-        // console.log(lineRanges);
+        console.log(lineRanges);
 
         return tokensBuilder.build();
     }
 
     private shouldUseEmbeddedRuby(range: any): boolean {
+        // return range.node.isBlockNode();
         // Mark Ruby code sections for embedded language support
-        return range.tokenType === 'ruby' ||
-               range.type === 'ruby' ||
-               range.type === 'logic' ||
-               (range.text && (range.text.startsWith('=') || range.text.startsWith('- ')));
+        return range.type === 'logic' || range.type === 'ruby-block';
     }
 }

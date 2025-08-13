@@ -45,22 +45,15 @@ A comprehensive VS Code extension that provides syntax highlighting, formatting 
 
 ## Configuration
 
-The extension provides several configuration options:
+The extension has multiple settings that can be changed:
 
-```json
-{
-  "slim.indentSize": 2,        // Number of spaces for indentation
-  "slim.useTab": false,        // Use tabs instead of spaces
-  "slim.formatOnSave": true,   // Format files automatically on save
-  "slim.codeFoldingDepth": 5   // Minimum number of lines for folding ranges
-}
-```
+![Settings](images/screenshot-settings.png)
 
 ## Usage
 
 ### Syntax Highlighting
 
-![Basic Slim Template](images/screenshot-basic.png)
+![Syntax Highlighting](images/screenshot-syntax.png)
 
 ### Formatting
 

@@ -20,8 +20,6 @@ node_modules/**
 # Documentation
 EMBEDDED_LANGUAGES.md
 INSTALLATION.md
-CHANGELOG.md
-README.md
 
 # Archive files
 archive/**
