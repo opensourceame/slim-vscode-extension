@@ -47,13 +47,13 @@ A comprehensive VS Code extension that provides syntax highlighting, formatting 
 
 The extension has multiple settings that can be changed:
 
-![Settings](images/screenshot-settings.png)
+![Settings](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/master/images/screenshot-settings.png)
 
 ## Usage
 
 ### Syntax Highlighting
 
-![Syntax Highlighting](images/screenshot-syntax.png)
+![Syntax Highlighting](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/master/images/screenshot-syntax.png)
 
 ### Formatting
 
@@ -61,11 +61,11 @@ The extension has multiple settings that can be changed:
 - `Format Selection` (Ctrl+K Ctrl+F): Format selected text
 - Auto-format on save (if enabled)
 
-![Formatting Commands](images/screenshot-formatting.png)
+![Formatting Commands](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/masterimages/screenshot-formatting.png)
 
 ### Outline
 
-![Outline](images/screenshot-outline.png)
+![Outline](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/master/images/screenshot-outline.png)
 
 ### Code folding
 
