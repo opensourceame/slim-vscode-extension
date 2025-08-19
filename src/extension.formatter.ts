@@ -10,7 +10,6 @@ export class SlimExtensionFormatter extends SlimExtensionBase {
             { language: 'slim' },
             {
                 provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
-                    // const indentSize = getSlimConfiguration('indentSize', 2);
                     const originalText = document.getText();
                     const template = new SlimTemplate(originalText);
                     const rendered = template.render();
@@ -22,7 +21,9 @@ export class SlimExtensionFormatter extends SlimExtensionBase {
                     );
 
                     const edit = vscode.TextEdit.replace(fullRange, rendered);
-                    console.log('=== FORMATTER SUCCESS ===');
+
+                    console.log('document formatted: length', rendered.length, 'original length', originalText.length);
+
                     return [edit];
                 }
             }

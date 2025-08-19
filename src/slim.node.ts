@@ -3,27 +3,27 @@ import { SlimTemplate } from "./slim.template";
 // Import boolean attributes from SlimTemplate
 const BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'multiple', 'ismap', 'defer', 'declare', 'noresize', 'nowrap'];
 const TOKEN_MAP = {
-    'attribute-name': 'attribute-name',
-    'attribute-value': 'attribute-value',
+    'attribute-name': 'property',
+    'attribute-value': 'struct',
     'boolean-attribute': 'boolean-attribute',
     'class': 'class',
     'comment': 'comment',
     'comment-block': 'comment',
-    'css': 'namespace',
+    'css': 'macro',
     'css-block': 'text',
     'doctype': 'doctype',
-    'id': 'id',
-    'javascript': 'namespace',
+    'id': 'parameter',
+    'javascript': 'macro',
     'javascript-block': 'text',
     'label': 'label',
-    'logic': 'ruby',
+    'logic': 'punctuation',
     'namespace': 'namespace',
     'scss': 'namespace',
     'scss-block': 'text',
     'operator': 'operator',
-    'ruby': '',
-    'ruby-block': '',
-    'tag': 'tag',
+    'ruby': 'macro',
+    'ruby-block': 'variable',
+    'tag': 'function',
     'text': 'text',
     'variable': 'variable',
 };
@@ -411,7 +411,6 @@ export class SlimNode {
 
     private whitespace() {
         if (this.depth < 1) {
-            console.log(this.template);
             return "";
         }
 

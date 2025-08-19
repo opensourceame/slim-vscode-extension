@@ -19,17 +19,37 @@ export class SlimSemanticTokenProvider implements vscode.DocumentSemanticTokensP
 
         for (const lineRange of lineRanges) {
             lineRange.ranges.forEach(range => {
-                tokensBuilder.push(
-                    lineRange.lineNumber - 1, // line numbers are 1-indexed, but semantic tokens are 0-indexed
-                    range.start,
-                    range.end - range.start,
-                    this.legend.tokenTypes.indexOf(range.tokenType)
-                );
+                // Check if this is a Ruby code section that should use embedded language
+                if (this.shouldUseEmbeddedRuby(range)) {
+                    // Mark tIn his range as embedded Ruby language with the embeddedLanguage modifier
+                    const embeddedLanguageModifier = this.legend.tokenModifiers.indexOf('embeddedLanguage');
+                    tokensBuilder.push(
+                        lineRange.lineNumber - 1, // line numbers are 1-indexed, but semantic tokens are 0-indexed
+                        range.start,
+                        range.end - range.start,
+                        this.legend.tokenTypes.indexOf('text'),
+                        embeddedLanguageModifier >= 0 ? (1 << embeddedLanguageModifier) : 0
+                    );
+                } else {
+                    tokensBuilder.push(
+                        lineRange.lineNumber - 1,
+                        range.start,
+                        range.end - range.start,
+                        this.legend.tokenTypes.indexOf(range.tokenType)
+                    );
+                }
             });
         }
 
-        console.log(lineRanges);
+        // uncomment when debugging syntax highlighting
+        // console.log(lineRanges);
 
         return tokensBuilder.build();
+    }
+
+    private shouldUseEmbeddedRuby(range: any): boolean {
+        // return range.node.isBlockNode();
+        // Mark Ruby code sections for embedded language support
+        return range.type === 'logic' || range.type === 'ruby-block';
     }
 }

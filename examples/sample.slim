@@ -1,6 +1,7 @@
 doctype html
 html
   head
+
     title Sample Slim Template
     meta name="viewport" content="width=device-width, initial-scale=1"
     css:
@@ -15,12 +16,12 @@ html
       }
 
   body
-    .container
+    /.container§
       h1 Welcome to Slim
       p This is a sample template demonstrating the VS Code extension features.
 
-      // This is a comment
-      / This is also a comment
+      / This is a comment
+        on multiple lines
 
       #main-content
         h2 Features
@@ -40,6 +41,14 @@ html
           document.addEventListener('DOMContentLoaded', function() {
             console.log('Page loaded!');
           });
+
+
+        css:
+          .highlight {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+          }
 
         p
           | This is plain text content using the pipe syntax.
