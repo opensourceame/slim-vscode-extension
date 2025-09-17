@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.2] - 2024-09-17
 
-- linter bugfixes
+- Added support for pipe (|) syntax for text content in linter validation
+- Fixed duplicate ID error when IDs appear in attribute values (e.g., target: '#test')
 
 ## [0.3.1] - 2024-09-17
 
