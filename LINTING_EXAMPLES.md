@@ -71,8 +71,11 @@ div[] Empty brackets are not allowed
 **Error**: Unexpected 'end' keyword
 ```slim
 - end
+= something; end
 ```
 **Message**: `Unexpected 'end' keyword without matching block opener.`
+
+**Note**: Method names containing "end" (like `render`, `send`, `extend`) are correctly ignored and won't trigger this error.
 
 ## ⚠️ Warnings (Yellow Underlines)
 

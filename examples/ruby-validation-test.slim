@@ -1,0 +1,46 @@
+doctype html
+html
+  head
+    title Ruby Validation Test
+
+  body
+    h1 Ruby Validation Examples
+
+    / These should NOT trigger "unexpected end" errors:
+    = render 'favourites/toggle', place: place, favourite: @favourite
+    = content_for :head
+    = extend ApplicationHelper
+    = append_to_content_for :sidebar
+    = prepend_to_content_for :header
+    = render_partial 'shared/header'
+    = send_email_notification
+    = recommend_products(user)
+    = backend_service.fetch_data
+    = frontend_component.render_view
+
+    / These should also be fine (method calls with "end" in the name):
+    = user.send_reminder
+    = order.send_confirmation
+    = product.recommend_similar
+    = service.extend_subscription
+
+    / These SHOULD trigger "unexpected end" errors:
+    - end
+    = something; end
+    - result = calculate(); end
+
+    / These should NOT trigger errors (valid Ruby with blocks):
+    - if user_signed_in?
+      p = current_user.name
+    - end
+
+    - users.each do |user|
+      p = user.email
+    - end
+
+    - case status
+    - when 'active'
+      p Active user
+    - when 'inactive'
+      p Inactive user
+    - end

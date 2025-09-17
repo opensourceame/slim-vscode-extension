@@ -406,8 +406,8 @@ export class SlimDiagnosticProvider {
                 };
             }
 
-            // Check for common Ruby syntax errors
-            if (rubyCode.includes('end') && !rubyCode.match(/(if|unless|case|begin|def|class|module|while|until|for)\s/)) {
+            // Check for common Ruby syntax errors - look for 'end' as a complete word
+            if (rubyCode.match(/\bend\b/) && !rubyCode.match(/(if|unless|case|begin|def|class|module|while|until|for)\s/)) {
                 return {
                     message: "Unexpected 'end' keyword without matching block opener.",
                     range: this.getNodeRange(node, document),
