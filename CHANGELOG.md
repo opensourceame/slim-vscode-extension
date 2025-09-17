@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2024-09-17
+
+### Added
+- **Syntax Linting**: Real-time error detection and warnings for Slim templates
+  - Invalid tag syntax validation
+  - Unclosed brackets detection
+  - Invalid attribute syntax checking
+  - Inconsistent indentation warnings
+  - Duplicate ID detection
+  - Basic Ruby syntax validation for embedded code
+- **Linting Configuration**: Comprehensive settings to enable/disable specific linting rules
+  - `slim.linting.enabled`: Master toggle for all linting features
+  - `slim.linting.validateSyntax`: Basic Slim syntax validation
+  - `slim.linting.validateIndentation`: Indentation consistency checking
+  - `slim.linting.validateRuby`: Ruby code syntax validation
+  - `slim.linting.validateIds`: Duplicate ID detection
+  - `slim.linting.warnEmptyTags`: Empty tag warnings
+
+## [0.2.3] - 2025-09-17
+
+- README fix
+
 ## [0.2.3] - 2025-08-14
 
 - minor fixes

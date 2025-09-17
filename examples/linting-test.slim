@@ -1,0 +1,43 @@
+doctype html
+html
+  head
+    title Test Linting
+
+  body
+    / Valid Slim syntax
+    h1#main-title.header Hello World
+    p.content This is valid content
+
+    / Test invalid tag syntax
+    123invalid Tag names cannot start with numbers
+
+    / Test unclosed brackets
+    div[class="test" Missing closing bracket
+
+    / Test invalid attribute syntax
+    div[="empty-name"] Empty attribute name
+    div[123attr="invalid"] Attribute names cannot start with numbers
+
+    / Test duplicate IDs
+    div#duplicate-id First element
+    span#duplicate-id Second element with same ID
+
+    / Test inconsistent indentation (mixing spaces and tabs)
+    div
+      p Normal indentation
+	    span Mixed tab indentation
+
+    / Test empty tags (when warning is enabled)
+    .empty-class
+    #empty-id
+
+    / Test Ruby syntax errors
+    = "Unclosed string
+    - if condition_without_end
+    = some_method(unclosed_paren
+
+    / Valid Ruby syntax
+    - if user_signed_in?
+      p = current_user.name
+    - else
+      p Please sign in
