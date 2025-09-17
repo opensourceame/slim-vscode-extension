@@ -20,7 +20,8 @@
     "syntax",
     "formatting",
     "highlight",
-    "highlighting"
+    "highlighting",
+    "linting"
   ],
   "activationEvents": [
     "onLanguage:slim"
