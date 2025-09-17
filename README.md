@@ -30,6 +30,15 @@ A comprehensive VS Code extension that provides syntax highlighting, formatting 
 - **Elements with IDs**: quickly jump to any element with an ID from an alphabetical list
 - **Blocks**: jump to declarations of non-Slim blocks (CSS, Javascript, etc.)
 
+### Syntax Linting
+- **Real-time Error Detection**: Shows syntax errors and warnings as you type
+- **Configurable Rules**: Enable/disable specific linting rules via settings
+- **Syntax Validation**: Validates tag names, attributes, brackets, and Ruby code
+- **Indentation Checking**: Ensures consistent indentation throughout your templates
+- **Duplicate ID Detection**: Warns about duplicate IDs within the same document
+- **Ruby Syntax Validation**: Basic validation of embedded Ruby code syntax
+- **Smart Block Detection**: Automatically skips linting for non-Slim blocks (CSS, JavaScript, SCSS, Ruby, comments)
+
 ## Installation
 
 ### From Source
@@ -49,6 +58,24 @@ The extension has multiple settings that can be changed:
 
 ![Settings](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/master/images/screenshot-settings.png)
 
+### Basic Settings
+
+- `slim.indentSize`: Number of spaces for indentation (default: 2)
+- `slim.useTab`: Use tabs instead of spaces (default: false)
+- `slim.formatOnSave`: Format files automatically on save (default: false)
+- `slim.codeFoldingDepth`: Minimum number of lines that can be folded (default: 2)
+- `slim.preserveNonSlimIndentation`: Preserve non-Slim indentation when formatting (default: true)
+- `slim.outlineSortAlphabetically`: Sort outline items alphabetically by id#tag (default: true)
+
+### Linting Configuration
+
+- `slim.linting.enabled`: Enable/disable Slim template linting (default: true)
+- `slim.linting.validateSyntax`: Validate basic Slim syntax (tags, attributes, brackets) (default: true)
+- `slim.linting.validateIndentation`: Validate indentation consistency (default: true)
+- `slim.linting.validateRuby`: Validate embedded Ruby code syntax (default: true)
+- `slim.linting.validateIds`: Check for duplicate IDs in the document (default: true)
+- `slim.linting.warnEmptyTags`: Show warnings for empty tags with only selectors (default: false)
+
 ## Usage
 
 ### Syntax Highlighting
@@ -61,7 +88,7 @@ The extension has multiple settings that can be changed:
 - `Format Selection` (Ctrl+K Ctrl+F): Format selected text
 - Auto-format on save (if enabled)
 
-![Formatting Commands](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/masterimages/screenshot-formatting.png)
+![Formatting Commands](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/master/images/screenshot-formatting.png)
 
 ### Outline
 
@@ -71,6 +98,10 @@ The extension has multiple settings that can be changed:
 
 **Folding Behavior:**
 - Adjust the threshold via `slim.codeFoldingDepth` setting
+
+### Linting
+
+![Linting](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/master/images/screenshot-linting.png)
 
 ## Supported File Types
 - `.slim` files

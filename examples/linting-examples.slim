@@ -1,0 +1,180 @@
+doctype html
+html
+  head
+    title Slim Linting Examples
+
+  body
+    h1 Valid Slim Syntax Examples
+    p.content This is perfectly valid Slim code
+    div#main-container[data-role="main"] Valid attributes
+
+    / ============================================
+    / SYNTAX ERROR EXAMPLES
+    / ============================================
+
+    h2 Invalid Tag Syntax Errors
+
+    / ERROR: Tag names cannot start with numbers
+    123invalid This will show an error
+
+    / ERROR: Invalid characters at start of line
+    @invalid-start This is not valid Slim syntax
+    $also-invalid Another invalid start
+
+    / ERROR: Malformed tag syntax
+    div..double-dot This has double dots
+    span##double-hash This has double hashes
+
+    / ============================================
+
+    h2 Unclosed Brackets Examples
+
+    / ERROR: Missing closing square bracket
+    div[class="test" Missing closing bracket
+
+    / ERROR: Missing closing parenthesis in Ruby
+    = some_method(param1, param2 Missing closing paren
+
+    / ERROR: Unmatched curly braces
+    = { key: "value" Missing closing brace
+
+    / ============================================
+
+    h2 Invalid Attribute Syntax
+
+    / ERROR: Empty attribute name
+    div[="no-name"] Attribute name is missing
+
+    / ERROR: Invalid attribute name (starts with number)
+    div[123attr="invalid"] Attribute names cannot start with numbers
+
+    / ERROR: Invalid attribute name (special characters)
+    div[@invalid="bad"] Attribute names cannot start with @
+
+    / ERROR: Empty attribute brackets
+    div[] Empty brackets are not allowed
+
+    / ============================================
+
+    h2 Inconsistent Indentation Examples
+
+    / ERROR: Mixed spaces and tabs (this example uses spaces normally)
+    div
+      p Normal 2-space indentation
+	    span This line uses a tab instead of spaces
+      p Back to normal spaces
+
+    / ERROR: Wrong indentation size (assuming 2-space config)
+    div
+       p This has 3 spaces instead of 2
+    p This should be indented
+
+    / ============================================
+
+    h2 Duplicate ID Examples
+
+    / ERROR: These IDs are duplicated
+    div#duplicate-id First element with this ID
+    p Some content in between
+    span#duplicate-id Second element with same ID - ERROR!
+
+    / Another duplicate set
+    section#header Header section
+    footer#header Footer with same ID as header - ERROR!
+
+    / ============================================
+
+    h2 Ruby Syntax Errors
+
+    / ERROR: Unmatched quotes in Ruby code
+    = "This string is not closed properly
+    - name = 'Another unclosed string
+
+    / ERROR: Unmatched quotes with mixed types
+    = "Mixed quote types'
+    - value = 'Wrong closing"
+
+    / ERROR: Unexpected 'end' without block opener
+    - end
+
+    / ERROR: Missing closing parenthesis in Ruby method call
+    = link_to("Click here", some_path, class: "btn"
+    - result = calculate_total(price, tax
+
+    / ============================================
+
+    h2 Empty Tag Warnings (when enabled)
+
+    / WARNING: Empty tags with only selectors
+    .empty-class-only
+    #empty-id-only
+    div.empty-with-class
+    span#empty-with-id
+
+    / ============================================
+
+    h2 Valid Examples (No Errors)
+
+    / These are all perfectly valid:
+    div.container
+      h3#section-title Section Title
+      p.description[data-info="test"]
+        | This is valid text content
+
+      - if user_signed_in?
+        p = "Hello, #{current_user.name}!"
+        = link_to "Profile", user_path(current_user), class: "btn btn-primary"
+      - else
+        p Please sign in
+        = link_to "Sign In", new_user_session_path
+
+      ul.list
+        - items.each do |item|
+          li.list-item[data-id=item.id]
+            = item.name
+
+    / Valid embedded blocks - these should NOT trigger linting errors
+    javascript:
+      console.log("This is valid JavaScript");
+      document.ready(function() {
+        alert("Page loaded");
+      });
+      // Even invalid Slim syntax here should be ignored:
+      123invalid-in-js = "this looks like invalid Slim but it's JavaScript"
+      [unclosed-bracket = "this is fine in JavaScript context"
+
+    css:
+      .valid-css {
+        color: red;
+        font-size: 14px;
+      }
+      /* CSS with Slim-looking syntax should be ignored: */
+      .123starts-with-number { color: blue; }
+      [attribute-looking-thing] { display: block; }
+
+    scss:
+      $primary-color: #333;
+      .nested {
+        color: $primary-color;
+        &:hover {
+          color: lighten($primary-color, 20%);
+        }
+      }
+      // SCSS with invalid Slim syntax should be ignored:
+      123invalid { color: red; }
+
+    ruby:
+      def some_method
+        puts "This is Ruby code"
+        return "value"
+      end
+      # Ruby code that looks like invalid Slim should be ignored:
+      123variable = "starts with number but it's Ruby"
+      [some_array] = ["this", "looks", "like", "slim", "attributes"]
+
+    / Comment blocks should also be ignored
+    /
+      This is a comment block
+      123invalid syntax here should be ignored
+      [unclosed brackets should be ignored
+      Even @invalid characters are fine in comments

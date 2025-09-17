@@ -2,7 +2,7 @@
   "name": "slim-vscode-extension",
   "displayName": "Slim / Trim Language Support",
   "description": "Syntax highlighting, code folding and formatting for Slim and Trim templates",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "publisher": "opensourceame",
   "engines": {
     "vscode": "^1.60.0"
@@ -122,6 +122,36 @@
           "type": "boolean",
           "default": true,
           "description": "Sort outline items alphabetically by id#tag"
+        },
+        "slim.linting.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable Slim template linting"
+        },
+        "slim.linting.validateSyntax": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate basic Slim syntax (tags, attributes, brackets)"
+        },
+        "slim.linting.validateIndentation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate indentation consistency"
+        },
+        "slim.linting.validateRuby": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate embedded Ruby code syntax"
+        },
+        "slim.linting.validateIds": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check for duplicate IDs in the document"
+        },
+        "slim.linting.warnEmptyTags": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show warnings for empty tags with only selectors"
         }
       }
     }
