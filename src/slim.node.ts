@@ -107,8 +107,10 @@ export class SlimNode {
             this.tag = "";
         }
 
-        // Parse ID (starts with #)
-        const idMatch = trimmed.match(/#([a-zA-Z0-9_-]+)/);
+        // Parse ID (starts with #) - but only in tag/selector context, not in attribute values
+        // Look for # that comes after tag name or at start, but not inside quotes or after colons
+        const idMatch = trimmed.match(/^[a-zA-Z0-9]*#([a-zA-Z0-9_-]+)/) ||
+                       (trimmed.startsWith('#') ? trimmed.match(/^#([a-zA-Z0-9_-]+)/) : null);
         if (idMatch) {
             this.id = idMatch[1];
         }
