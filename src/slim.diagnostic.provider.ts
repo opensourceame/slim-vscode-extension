@@ -198,8 +198,15 @@ export class SlimDiagnosticProvider {
         let openParens = 0;
         let openBraces = 0;
 
-        for (let i = 0; i < line.length; i++) {
-            const char = line[i];
+        // If the line does not contain any brackets, return null
+        if (!(line.includes('(') || line.includes('[') || line.includes('{'))) {
+            return null;
+        }
+
+        const content = node.getFullContent();
+
+        for (let i = 0; i < content.length; i++) {
+            const char = content[i];
             if (char === '[') openBrackets++;
             else if (char === ']') openBrackets--;
             else if (char === '(') openParens++;

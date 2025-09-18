@@ -468,6 +468,14 @@ export class SlimNode {
         return maxEndLine;
     }
 
+    public getFullContent(): string {
+        let result = this.content;
+        for (const child of this.children) {
+            result += child.getFullContent();
+        }
+        return result;
+    }
+
     public getFoldingRanges(minLines: number = 1): Array<{ start: number, end: number, tag: string }> {
         const ranges: Array<{ start: number, end: number, tag: string }> = [];
 

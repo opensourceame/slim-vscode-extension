@@ -1,0 +1,38 @@
+doctype html
+html
+  head
+    title Test Multi-line Parentheses
+
+  body
+    / This should NOT trigger an error (properly closed)
+    = page_header(t("greeting",
+      name: user.name,
+      salutation: user.salutation
+      ))
+
+    / This SHOULD trigger an error (missing closing parenthesis)
+    = another_method(param1,
+      param2,
+      param3
+
+    / Single line test - should trigger error
+    = single_line_method(param1, param2
+
+    / Single line test - should NOT trigger error
+    = working_method(param1, param2)
+
+    / Test with square brackets - should trigger error
+    div[class="test",
+        id="missing-bracket"
+
+    / Test with square brackets - should NOT trigger error
+    div[class="test",
+        id="complete"]
+
+    / Test with curly braces - should trigger error
+    = hash_method({ key: "value",
+      another: "missing brace"
+
+    / Test with curly braces - should NOT trigger error
+    = complete_hash({ key: "value",
+      another: "complete" })
