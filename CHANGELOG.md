@@ -5,20 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.3] - 2024-09-18
+## [0.3.4] - 2025-10-07
+
+- Security update
+
+## [0.3.3] - 2025-09-18
 
 - Fix for parenthesis close detection when parenthesis content spans multiple lines
 
-## [0.3.2] - 2024-09-17
+## [0.3.2] - 2025-09-17
 
 - Added support for pipe (|) syntax for text content in linter validation
 - Fixed duplicate ID error when IDs appear in attribute values (e.g., target: '#test')
 
-## [0.3.1] - 2024-09-17
+## [0.3.1] - 2025-09-17
 
 - bugfix, "render" in a slim template was being incorrectly flagged as an error
 
-## [0.3.0] - 2024-09-17
+## [0.3.0] - 2025-09-17
 
 ### Added
 - **Syntax Linting**: Real-time error detection and warnings for Slim templates
