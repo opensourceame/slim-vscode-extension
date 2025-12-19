@@ -31,8 +31,8 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
         const blocksSymbols = this.findBlocks(nodes);
         const majorTagsSymbols = this.findMajorTags(nodes);
 
-        const idsParent = this.createParentSymbol(document, idSymbols, 'Elements with IDs');
-        const blocksParent = this.createParentSymbol(document, blocksSymbols, 'Blocks');
+        const idsParent       = this.createParentSymbol(document, idSymbols, 'Elements with IDs');
+        const blocksParent    = this.createParentSymbol(document, blocksSymbols, 'Blocks');
         const majorTagsParent = this.createParentSymbol(document, majorTagsSymbols, 'Major Tags');
 
         return [idsParent, blocksParent, majorTagsParent];
@@ -51,10 +51,22 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
             }
         });
 
-        return majorTags.map(node => this.createSymbol(node)).sort((a, b) => {
-            return a.name.localeCompare(b.name);
-        });
+        return majorTags
+            .sort((a, b) => this.formatMajorTag(a).localeCompare(this.formatMajorTag(b)))
+            .map(node => this.createSymbol(node));
     }
+
+    private formatMajorTag(node: SlimNode): string {
+        var name = node.tag;
+        if (node.id && node.id !== '') {
+            name = name + ` #${node.id}`;
+        }
+        // if (node.classes && node.classes.length > 0) {
+        //     name = name + ` .${node.classes.join('.')}`;
+        // }
+        return name;
+    }
+
     private findBlocks(nodes: SlimNode[]): vscode.DocumentSymbol[] {
         const blockNodes: SlimNode[] = [];
 
