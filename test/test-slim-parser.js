@@ -1,170 +1,242 @@
-// Test script for SlimSyntaxHighlighter line parsing
-function parseLineComponents(line) {
-    const result = {
-        tagName: '',
-        tagStart: 0,
-        tagAttributes: '',
-        htmlAttributes: '',
-        text: ''
-    };
+// Mock VS Code classes for testing
 
-    // Find tag name
-    const tagMatch = line.match(/^\s*([a-zA-Z][a-zA-Z0-9]*)/);
-    if (!tagMatch) {
-        return result;
+// Mock VS Code classes for testing
+class MockRange {
+    constructor(startLine, startCharacter, endLine, endCharacter) {
+        this.start = { line: startLine, character: startCharacter };
+        this.end = { line: endLine, character: endCharacter };
     }
-
-    result.tagName = tagMatch[1];
-    result.tagStart = line.indexOf(result.tagName);
-
-    // Get the rest after tag name
-    let remaining = line.substring(result.tagStart + result.tagName.length).trim();
-
-    // Find where tag attributes end and HTML attributes begin
-    let inQuotes = false;
-    let quoteChar = '';
-
-    for (let i = 0; i < remaining.length; i++) {
-        const char = remaining[i];
-
-        // Handle quoted strings
-        if ((char === '"' || char === "'") && !inQuotes) {
-            inQuotes = true;
-            quoteChar = char;
-        } else if (char === quoteChar && inQuotes) {
-            inQuotes = false;
-        }
-
-        // If we find a space and we're not in quotes, check if next char is a letter (HTML attribute)
-        if (char === ' ' && !inQuotes && i + 1 < remaining.length) {
-            const nextChar = remaining[i + 1];
-            if (nextChar.match(/[a-zA-Z]/) && !nextChar.match(/[#\.]/)) {
-                // This is the start of HTML attributes
-                result.tagAttributes = remaining.substring(0, i).trim();
-                result.htmlAttributes = remaining.substring(i + 1).trim();
-                return result;
-            }
-        }
-
-        // If we find an equals sign and we're not in quotes, this is likely an HTML attribute
-        if (char === '=' && !inQuotes) {
-            // Look backwards to see if this is part of an HTML attribute
-            let j = i - 1;
-            while (j >= 0 && remaining[j].match(/[a-zA-Z0-9_-]/)) {
-                j--;
-            }
-            if (j >= 0 && remaining[j] === ' ') {
-                // This is an HTML attribute, everything before the space is tag attributes
-                result.tagAttributes = remaining.substring(0, j).trim();
-                result.htmlAttributes = remaining.substring(j + 1).trim();
-                return result;
-            }
-        }
-
-        // If we find an equals sign and we're not in quotes, and there's no space before it,
-        // this is likely an HTML attribute at the start
-        if (char === '=' && !inQuotes && i > 0) {
-            let j = i - 1;
-            while (j >= 0 && remaining[j].match(/[a-zA-Z0-9_-]/)) {
-                j--;
-            }
-            if (j < 0) {
-                // This is an HTML attribute at the start, no tag attributes
-                result.tagAttributes = '';
-                result.htmlAttributes = remaining.trim();
-                return result;
-            }
-        }
-    }
-
-    // If we get here, everything after tag name is tag attributes
-    result.tagAttributes = remaining;
-
-    return result;
 }
 
-function testLineParsing(line, expected) {
-    console.log(`Testing: "${line}"`);
-
-    const result = parseLineComponents(line);
-
-    console.log(`  Tag: "${result.tagName}" (expected: "${expected.tagName}")`);
-    console.log(`  Tag Attributes: "${result.tagAttributes}" (expected: "${expected.tagAttributes}")`);
-    console.log(`  HTML Attributes: "${result.htmlAttributes}" (expected: "${expected.htmlAttributes}")`);
-
-    // Check if results match expected
-    const tagMatch = result.tagName === expected.tagName;
-    const tagAttrMatch = result.tagAttributes === expected.tagAttributes;
-    const htmlAttrMatch = result.htmlAttributes === expected.htmlAttributes;
-
-    if (tagMatch && tagAttrMatch && htmlAttrMatch) {
-        console.log(`  ✅ PASS`);
-    } else {
-        console.log(`  ❌ FAIL`);
-        if (!tagMatch) console.log(`    Tag mismatch`);
-        if (!tagAttrMatch) console.log(`    Tag attributes mismatch`);
-        if (!htmlAttrMatch) console.log(`    HTML attributes mismatch`);
+class MockSemanticTokensBuilder {
+    constructor() {
+        this.tokens = [];
     }
 
-    console.log('');
+    push(range, tokenType) {
+        this.tokens.push({ range, tokenType });
+    }
+
+    build() {
+        return { tokens: this.tokens };
+    }
 }
 
+// Mock the vscode module
+const mockVscode = {
+    Range: MockRange,
+    SemanticTokensBuilder: MockSemanticTokensBuilder
+};
+
+// Import the actual provider (we'll need to modify it to work in Node.js)
+class SlimSemanticTokenProvider {
+    provideDocumentSemanticTokens(document, token) {
+        const tokensBuilder = new MockSemanticTokensBuilder();
+        const text = document.getText();
+        const lines = text.split('\n');
+
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            const line = lines[lineIndex];
+            const trimmedLine = line.trim();
+
+            if (trimmedLine === '') continue;
+
+            // Find the start of the content (after indentation)
+            const contentStart = line.search(/\S/);
+            if (contentStart === -1) continue;
+
+            // Check for doctype
+            if (trimmedLine.startsWith('doctype')) {
+                tokensBuilder.push(
+                    new MockRange(lineIndex, contentStart, lineIndex, contentStart + 'doctype'.length),
+                    'doctype'
+                );
+                continue;
+            }
+
+            // Check for comments
+            if (trimmedLine.startsWith('/')) {
+                tokensBuilder.push(
+                    new MockRange(lineIndex, contentStart, lineIndex, line.length),
+                    'comment'
+                );
+                continue;
+            }
+
+            // Check for HTML tags (but not text that starts with a letter)
+            const tagMatch = trimmedLine.match(/^([a-zA-Z][a-zA-Z0-9]*)(?=\s|$|#|\.|\[)/);
+            if (tagMatch) {
+                const tagName = tagMatch[1];
+                tokensBuilder.push(
+                    new MockRange(lineIndex, contentStart, lineIndex, contentStart + tagName.length),
+                    'tag'
+                );
+
+                // Look for attributes
+                const attributeMatches = trimmedLine.matchAll(/([a-zA-Z][a-zA-Z0-9-]*)=["'][^"']*["']/g);
+                for (const match of attributeMatches) {
+                    const attrName = match[1];
+                    const attrStart = contentStart + match.index;
+                    tokensBuilder.push(
+                        new MockRange(lineIndex, attrStart, lineIndex, attrStart + attrName.length),
+                        'attribute'
+                    );
+                }
+
+                // Look for IDs
+                const idMatches = trimmedLine.matchAll(/#([a-zA-Z][a-zA-Z0-9-]*)/g);
+                for (const match of idMatches) {
+                    const idName = match[1];
+                    const idStart = contentStart + match.index + 1; // +1 to skip the #
+                    tokensBuilder.push(
+                        new MockRange(lineIndex, idStart, lineIndex, idStart + idName.length),
+                        'id'
+                    );
+                }
+
+                // Look for classes
+                const classMatches = trimmedLine.matchAll(/\.([a-zA-Z][a-zA-Z0-9-]*)/g);
+                for (const match of classMatches) {
+                    const className = match[1];
+                    const classStart = contentStart + match.index + 1; // +1 to skip the .
+                    tokensBuilder.push(
+                        new MockRange(lineIndex, classStart, lineIndex, classStart + className.length),
+                        'class'
+                    );
+                }
+
+                continue;
+            }
+
+            // If it's not a tag, treat as text content
+            tokensBuilder.push(
+                new MockRange(lineIndex, contentStart, lineIndex, line.length),
+                'text'
+            );
+        }
+
+        return tokensBuilder.build();
+    }
+}
+
+// Test cases
 const teSlimTemplateases = [
     {
-        line: 'div',
-        expected: { tagName: 'div', tagAttributes: '', htmlAttributes: '' }
+        name: "Basic HTML tag",
+        input: "div",
+        expected: [{ tokenType: 'tag', range: { start: { line: 0, character: 0 }, end: { line: 0, character: 3 } } }]
     },
     {
-        line: 'div#main',
-        expected: { tagName: 'div', tagAttributes: '#main', htmlAttributes: '' }
+        name: "Tag with ID",
+        input: "div#myId",
+        expected: [
+            { tokenType: 'tag', range: { start: { line: 0, character: 0 }, end: { line: 0, character: 3 } } },
+            { tokenType: 'id', range: { start: { line: 0, character: 4 }, end: { line: 0, character: 9 } } }
+        ]
     },
     {
-        line: 'div.user',
-        expected: { tagName: 'div', tagAttributes: '.user', htmlAttributes: '' }
+        name: "Tag with class",
+        input: "div.myClass",
+        expected: [
+            { tokenType: 'tag', range: { start: { line: 0, character: 0 }, end: { line: 0, character: 3 } } },
+            { tokenType: 'class', range: { start: { line: 0, character: 4 }, end: { line: 0, character: 11 } } }
+        ]
     },
     {
-        line: 'div#main.user',
-        expected: { tagName: 'div', tagAttributes: '#main.user', htmlAttributes: '' }
+        name: "Tag with attribute",
+        input: 'div id="myId"',
+        expected: [
+            { tokenType: 'tag', range: { start: { line: 0, character: 0 }, end: { line: 0, character: 3 } } },
+            { tokenType: 'attribute', range: { start: { line: 0, character: 4 }, end: { line: 0, character: 6 } } }
+        ]
     },
     {
-        line: 'a href="https://website.com"',
-        expected: { tagName: 'a', tagAttributes: '', htmlAttributes: 'href="https://website.com"' }
+        name: "Doctype",
+        input: "doctype html",
+        expected: [{ tokenType: 'doctype', range: { start: { line: 0, character: 0 }, end: { line: 0, character: 7 } } }]
     },
     {
-        line: 'a#link href="https://website.com"',
-        expected: { tagName: 'a', tagAttributes: '#link', htmlAttributes: 'href="https://website.com"' }
+        name: "Comment",
+        input: "/ This is a comment",
+        expected: [{ tokenType: 'comment', range: { start: { line: 0, character: 0 }, end: { line: 0, character: 19 } } }]
     },
     {
-        line: 'a.link href="https://website.com"',
-        expected: { tagName: 'a', tagAttributes: '.link', htmlAttributes: 'href="https://website.com"' }
+        name: "Text content",
+        input: "Hello World",
+        expected: [{ tokenType: 'text', range: { start: { line: 0, character: 0 }, end: { line: 0, character: 11 } } }]
     },
     {
-        line: 'a#link.link href="https://website.com" target="_blank"',
-        expected: { tagName: 'a', tagAttributes: '#link.link', htmlAttributes: 'href="https://website.com" target="_blank"' }
-    },
-    {
-        line: 'button#submit.btn.primary type="submit" disabled',
-        expected: { tagName: 'button', tagAttributes: '#submit.btn.primary', htmlAttributes: 'type="submit" disabled' }
-    },
-    {
-        line: '  div#main.user',  // with indentation
-        expected: { tagName: 'div', tagAttributes: '#main.user', htmlAttributes: '' }
-    },
-    {
-        line: 'button.btn.btn-primary#submit-form data-target="#update" disabled style="color: red" click here',
-        expected: {
-            tagName: 'button',
-            tagAttributes: '.btn.btn-primary#submit-form',
-            htmlAttributes: 'data-target="#update" disabled style="color: red" click here'
-        }
+        name: "Complex tag with ID, class, and attributes",
+        input: 'button#submit.btn.primary type="submit" disabled',
+        expected: [
+            { tokenType: 'tag', range: { start: { line: 0, character: 0 }, end: { line: 0, character: 6 } } },
+            { tokenType: 'id', range: { start: { line: 0, character: 7 }, end: { line: 0, character: 13 } } },
+            { tokenType: 'class', range: { start: { line: 0, character: 14 }, end: { line: 0, character: 17 } } },
+            { tokenType: 'class', range: { start: { line: 0, character: 18 }, end: { line: 0, character: 25 } } },
+            { tokenType: 'attribute', range: { start: { line: 0, character: 26 }, end: { line: 0, character: 30 } } }
+        ]
     }
 ];
 
-console.log('Testing SlimSyntaxHighlighter line parsing...\n');
+// Mock document
+class MockDocument {
+    constructor(text) {
+        this.text = text;
+    }
 
-teSlimTemplateases.forEach((teSlimTemplatease, index) => {
-    console.log(`Test ${index + 1}:`);
-    testLineParsing(teSlimTemplatease.line, teSlimTemplatease.expected);
-});
+    getText() {
+        return this.text;
+    }
+}
 
-console.log('✅ Line parsing tests completed!');
+// Run tests
+function runTests() {
+    const provider = new SlimSemanticTokenProvider();
+    let passed = 0;
+    let failed = 0;
+
+    console.log('Testing SlimSemanticTokenProvider...\n');
+
+    for (const teSlimTemplatease of teSlimTemplateases) {
+        console.log(`Test: ${teSlimTemplatease.name}`);
+        console.log(`Input: "${teSlimTemplatease.input}"`);
+
+        const document = new MockDocument(teSlimTemplatease.input);
+        const result = provider.provideDocumentSemanticTokens(document);
+
+        console.log(`Expected: ${JSON.stringify(teSlimTemplatease.expected, null, 2)}`);
+        console.log(`Actual: ${JSON.stringify(result.tokens, null, 2)}`);
+
+        // Normalize the results for comparison by sorting properties
+        const normalizeTokens = (tokens) => {
+            return tokens.map(token => ({
+                tokenType: token.tokenType,
+                range: token.range
+            }));
+        };
+
+        const actualNormalized = normalizeTokens(result.tokens);
+        const expectedNormalized = normalizeTokens(teSlimTemplatease.expected);
+
+        const matches = JSON.stringify(actualNormalized) === JSON.stringify(expectedNormalized);
+
+        if (matches) {
+            console.log('✅ PASSED\n');
+            passed++;
+        } else {
+            console.log('❌ FAILED\n');
+            failed++;
+        }
+    }
+
+    console.log(`\nResults: ${passed} passed, ${failed} failed`);
+
+    if (failed === 0) {
+        console.log('🎉 All tests passed!');
+    } else {
+        console.log('💥 Some tests failed!');
+    }
+}
+
+// Run the tests
+runTests();

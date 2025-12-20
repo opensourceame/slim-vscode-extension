@@ -81,7 +81,7 @@ export class SlimNode {
         }
 
         if (trimmed == 'scss:') {
-            this.type = "css";
+            this.type = "scss";
             return;
         }
 
