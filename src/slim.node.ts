@@ -468,10 +468,24 @@ export class SlimNode {
         return maxEndLine;
     }
 
-    public getFullContent(): string {
-        let result = this.content;
+    public getFullContent(withReturnChars: boolean = false): string {
+        let result = "";
+        if (withReturnChars) {
+            result = "\n".repeat(this.blankLinesAbove);
+            result += this.content + "\n";
+        } else {
+            result = this.content;
+        }
         for (const child of this.children) {
-            result += child.getFullContent();
+            result += child.getFullContent(withReturnChars);
+        }
+        return result;
+    }
+
+    public getInnerContent(withReturnChars: boolean = false): string {
+        let result = "";
+        for (const child of this.children) {
+            result += child.getFullContent(withReturnChars);
         }
         return result;
     }

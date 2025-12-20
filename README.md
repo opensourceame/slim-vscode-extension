@@ -94,6 +94,10 @@ The extension has multiple settings that can be changed:
 
 ![Outline](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/master/images/screenshot-outline.png)
 
+Outlines also show CSS/SCSS elements within a template
+
+![Outline with CSS](https://raw.githubusercontent.com/opensourceame/slim-vscode-extension/master/images/screenshot-outline-css.png)
+
 ### Code folding
 
 **Folding Behavior:**

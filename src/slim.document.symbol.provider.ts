@@ -197,9 +197,11 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
 
         for (const node of nodes) {
             if (node.type === 'css' || node.type === 'scss') {
-                const cssContent = this.extractCssContent(node);
-                if (cssContent && cssContent.trim()) {
+                const cssContent = node.getInnerContent(true);
+                if (cssContent) {
                     const symbols = await this.getCssSymbols(cssContent, node);
+                    console.log(`Found ${symbols.length} CSS symbols for ${node.type} block at line ${node.lineNumber}`);
+                    console.log(symbols);
                     cssSymbols.push(...symbols);
                 } else {
                     // Debug: log when CSS content is empty
@@ -209,48 +211,6 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
         }
 
         return cssSymbols;
-    }
-
-    private extractCssContent(node: SlimNode): string {
-        const lines: string[] = [];
-
-        console.log(`Extracting CSS content from ${node.type} node at line ${node.lineNumber}`);
-        console.log(`Node has ${node.children.length} children`);
-
-        // Debug: log all children
-        node.children.forEach((child, i) => {
-            console.log(`  Child ${i}: type="${child.type}", line="${child.line}"`);
-        });
-
-        // Collect all child nodes that are css-block or scss-block
-        for (const child of node.children) {
-            if (child.type === 'css-block' || child.type === 'scss-block') {
-                // Get the content with proper indentation removed
-                const content = child.line;
-                if (content && content.trim()) {
-                    // Remove the indentation to get clean CSS
-                    lines.push(content.trim());
-                    console.log(`  Added CSS line: "${content.trim()}"`);
-                }
-            }
-        }
-
-        // If no child nodes found with specific types, collect all child content
-        if (lines.length === 0 && node.children.length > 0) {
-            console.log('No css-block/scss-block children found, using fallback');
-            // Fallback: collect all non-empty child lines that aren't block declarations
-            for (const child of node.children) {
-                const content = child.line;
-                if (content && content.trim() && !content.trim().endsWith(':')) {
-                    lines.push(content.trim());
-                    console.log(`  Added fallback line: "${content.trim()}"`);
-                }
-            }
-        }
-
-        const result = lines.join('\n');
-        console.log(`Final CSS content (${result.length} chars):`, result);
-        return result;
     }
 
     private async getCssSymbols(cssContent: string, parentNode: SlimNode): Promise<vscode.DocumentSymbol[]> {
@@ -342,7 +302,7 @@ export class SlimDocumentSymbolProvider implements vscode.DocumentSymbolProvider
                 : [];
 
             // Create detail with line number like other symbols
-            const detail = `Line ${startLine + 1}`;
+            const detail = `Line ${firstChildLine + symbol.range.start.line + 1}`;
 
             const adjustedSymbol = new vscode.DocumentSymbol(
                 symbol.name,
