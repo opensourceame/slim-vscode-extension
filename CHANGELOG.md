@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.3] - 2026-09-06
+
+### Fixed
+- Syntax highlighting no longer breaks on lines that begin with an implicit `div` (e.g. `.example` or `#id-2` with no explicit tag name) — these now highlight the same as `div.example`/`div#id-2` (#33)
+
 ## [0.4.2] - 2026-07-29
 
 ### Security
