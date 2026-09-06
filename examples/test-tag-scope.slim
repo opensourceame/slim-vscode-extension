@@ -1,0 +1,11 @@
+// Regression examples for https://github.com/opensourceame/slim-vscode-extension/issues/33
+// Both lines in each pair should highlight identically.
+div.example data-test="true" role="test"
+.example data-test="true" role="test"
+
+div#id-1 data-test="true" role="test"
+#id-2 data-test="true" role="test"
+
+div.a.b#c data-test="true"
+.a.b#c data-test="true"
+#c.a.b data-test="true"

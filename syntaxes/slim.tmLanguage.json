@@ -159,7 +159,7 @@
       ]
     },
     "tag-line": {
-      "match": "^(\\s*)([\\w-]+(?:\\.[\\w-]+)*(?:#[\\w-]+)*)(.*)$",
+      "match": "^(\\s*)([\\w-]+(?:[.#][\\w-]+)*|(?:[.#][\\w-]+)+)(.*)$",
       "captures": {
         "1": {
           "name": "punctuation.whitespace.leading.slim"
