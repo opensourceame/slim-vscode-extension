@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.4] - 2026-09-23
+
+### Security
+- Bump js-yaml to 4.3.2 (fixes quadratic CPU consumption DoS in `!!omap`/merge-key resolution, GHSA-5p4m-2wfm-xmqj and GHSA-2883-xcg3-v3hh)
+- Bump fast-uri to 3.1.8 (fixes multiple host-confusion/SSRF issues via malformed URI normalization, GHSA-7p8r-x3mc-p8w7, GHSA-5jgf-p345-68v8, GHSA-f65p-4m7j-42xc, GHSA-fph4-wmhf-6fwf, GHSA-jqff-g426-hqxp)
+- Bump brace-expansion to 5.0.12 (fixes DoS via unbounded intermediate arrays, GHSA-rgw5-rvv9-x895)
+- Bump qs to 6.16.0 (fixes array-limit bypass and DoS via attacker-controlled `isBuffer`, GHSA-x5fp-wj9c-mxmx)
+- `npm audit` now reports 0 vulnerabilities
+
 ## [0.4.3] - 2026-09-06
 
 ### Fixed
