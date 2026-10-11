@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.5] - 2026-10-12
+
+### Security
+- Upgrade @vscode/vsce to 4.0.0, which removes undici, markdown-it and the secretlint/globby/fast-glob/micromatch/braces chain from the dependency tree:
+  - undici: fixes TLS certificate validation bypass, response splitting, cookie disclosure, unsafe-method cache replay and multiple DoS issues (GHSA-w293-vg96-wgc3, GHSA-r53p-7pc4-xj5r, GHSA-2jfj-6hjv-fm6j, GHSA-8436-99hf-9mmv, GHSA-2gqq-gqf2-x968, GHSA-pmjh-fq2x-6v4x and others)
+  - markdown-it: fixes quadratic-time DoS with `linkify: true` (GHSA-253c-mchw-3w2r)
+  - braces: fixes stack-exhaustion DoS via deeply nested patterns (GHSA-vfj7-8cjw-p6xm)
+- Bump js-yaml (via mocha) to 5.4.3 (fixes CPU DoS via empty merge sources, GHSA-r3ph-w7gj-g6xm)
+- `npm audit` now reports 0 vulnerabilities
+
+### Changed
+- Packaging the extension (`npm run package` / `npm run publish`) now requires Node.js 22 or newer
+
 ## [0.4.4] - 2026-09-23
 
 ### Security

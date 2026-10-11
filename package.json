@@ -2,7 +2,7 @@
   "name": "slim-vscode-extension",
   "displayName": "Slim / Trim Language Support",
   "description": "Syntax highlighting, code folding, linting and formatting for Slim and Trim templates",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "publisher": "opensourceame",
   "engines": {
     "vscode": "^1.60.0"
@@ -182,7 +182,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^16.0.0",
     "@types/vscode": "^1.60.0",
-    "@vscode/vsce": "^3.9.2",
+    "@vscode/vsce": "^4.0.0",
     "chai": "^5.2.1",
     "mocha": "^12.0.0-rc.5",
     "ts-node": "^10.9.2",
