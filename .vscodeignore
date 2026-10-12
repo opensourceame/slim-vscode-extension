@@ -26,6 +26,8 @@ archive/**
 
 # Test files
 test/**
+.vscode-test/**
+.vscode-test.mjs
 
 # Build artifacts - exclude test files but include all src files
 out/test/**

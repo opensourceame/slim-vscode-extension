@@ -161,29 +161,19 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "echo 'Skipping compilation for direct TypeScript execution'",
-    "test": "tsx test-simple.ts",
-    "test:watch": "mocha --watch",
+    "pretest": "npm run compile",
+    "test": "vscode-test",
     "lint": "eslint src --ext ts",
     "package": "vsce package",
     "publish": "vsce publish"
   },
-  "mocha": {
-    "require": [
-      "ts-node/register"
-    ],
-    "extension": [
-      "ts"
-    ],
-    "spec": "test/**/*.test.ts"
-  },
   "devDependencies": {
-    "@types/chai": "^5.2.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "^16.0.0",
     "@types/vscode": "^1.60.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^4.0.0",
-    "chai": "^5.2.1",
     "mocha": "^12.0.0-rc.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
@@ -230,5 +220,10 @@
     }
   ],
   "markdown": "github",
-  "qna": "https://github.com/opensourceame/slim-vscode-extension/issues"
+  "qna": "https://github.com/opensourceame/slim-vscode-extension/issues",
+  "overrides": {
+    "@vscode/test-cli": {
+      "mocha": "$mocha"
+    }
+  }
 }
