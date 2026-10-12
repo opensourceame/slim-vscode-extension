@@ -122,6 +122,16 @@ Outlines also show CSS/SCSS elements within a template
 4. Add tests if applicable
 5. Submit a pull request
 
+### Running tests
+
+Tests use [Mocha](https://mochajs.org/) and live in `test/suite/*.test.ts`. They run inside VS Code, so they can use the full extension API:
+
+```bash
+npm test
+```
+
+This compiles the extension and runs the tests in a separate copy of VS Code. The first run downloads that copy into `.vscode-test/`.
+
 ## License
 
 (c) David Kelly 2025
