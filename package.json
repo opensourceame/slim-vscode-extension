@@ -2,7 +2,7 @@
   "name": "slim-vscode-extension",
   "displayName": "Slim / Trim Language Support",
   "description": "Syntax highlighting, code folding, linting and formatting for Slim and Trim templates",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "publisher": "opensourceame",
   "engines": {
     "vscode": "^1.60.0"
@@ -49,48 +49,6 @@
         "path": "./syntaxes/slim.tmLanguage.json"
       }
     ],
-    "commands": [
-      {
-        "command": "slim.testFormatter",
-        "title": "Slim: Test Formatter",
-        "category": "Slim"
-      },
-      {
-        "command": "slim.checkFormatters",
-        "title": "Slim: Check Available Formatters",
-        "category": "Slim"
-      },
-      {
-        "command": "slim.forceFormat",
-        "title": "Slim: Force Format Document",
-        "category": "Slim"
-      },
-      {
-        "command": "slim.debugWorkspace",
-        "title": "Slim: Debug Workspace",
-        "category": "Slim"
-      }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "slim.testFormatter",
-          "when": "editorLangId == slim"
-        },
-        {
-          "command": "slim.checkFormatters",
-          "when": "editorLangId == slim"
-        },
-        {
-          "command": "slim.forceFormat",
-          "when": "editorLangId == slim"
-        },
-        {
-          "command": "slim.debugWorkspace",
-          "when": "editorLangId == slim"
-        }
-      ]
-    },
     "configuration": {
       "title": "Slim",
       "properties": {
