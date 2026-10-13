@@ -18,7 +18,7 @@ export class SlimTemplate extends SlimExtensionBase {
 
         this.indentSize                 = this.getConfig('indentSize') as number;
         this.preserveNonSlimIndentation = this.getConfig('preserveNonSlimIndentation') as boolean;
-        this.useTabs                    = this.getConfig('useTabs') as boolean;
+        this.useTabs                    = this.getConfig('useTab') as boolean;
     }
 
     public getConfig(key: string) {
