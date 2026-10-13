@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.8] - 2026-10-13
+
+### Removed
+- The "Slim: Test Formatter", "Slim: Check Available Formatters", "Slim: Force Format Document" and "Slim: Debug Workspace" commands, which were listed in the Command Palette but never registered, so running them failed with "command not found". Use VS Code's built-in Format Document and Format Document With... instead (#54)
+
 ## [0.4.7] - 2026-10-13
 
 ### Fixed
