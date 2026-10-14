@@ -68,14 +68,19 @@ div[] Empty brackets are not allowed
 ```
 **Message**: `Unmatched double quote in Ruby code.` or `Unmatched single quote in Ruby code.`
 
-**Error**: Unexpected 'end' keyword
-```slim
-- end
-= something; end
-```
-**Message**: `Unexpected 'end' keyword without matching block opener.`
+Quotes inside other strings (`t("it's here")`), escaped quotes, `#{}` interpolation and comments are handled, and a line ending in `,` or `\` is checked together with the lines that continue it.
 
-**Note**: Method names containing "end" (like `render`, `send`, `extend`) are correctly ignored and won't trigger this error.
+**Error**: Explicit `end`
+```slim
+- if user_signed_in?
+  p = current_user.name
+- end
+```
+**Message**: `Explicit 'end' is not allowed. Slim closes Ruby blocks by indentation.`
+
+**Note**: Only a `- end` line is an error. `end` as a method name, symbol or in a string (`= range.end`, `= t(".end")`) is fine.
+
+The lines nested in a `-` or `=` line (`- if`, `- each do`, `= form_with ... do`) are Slim, and are linted like any other Slim.
 
 ## ⚠️ Warnings (Yellow Underlines)
 

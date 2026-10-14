@@ -7,8 +7,7 @@ html
     / This should NOT trigger an error (properly closed)
     = page_header(t("greeting",
       name: user.name,
-      salutation: user.salutation
-      ))
+      salutation: user.salutation))
 
     / This SHOULD trigger an error (missing closing parenthesis)
     = another_method(param1,
