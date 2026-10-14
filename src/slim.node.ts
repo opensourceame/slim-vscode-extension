@@ -2,32 +2,36 @@ import { SlimTemplate } from "./slim.template";
 
 // Import boolean attributes from SlimTemplate
 const BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'multiple', 'ismap', 'defer', 'declare', 'noresize', 'nowrap'];
+
+// Slim embedded engines (https://github.com/slim-template/slim#embedded-engines-markdown-).
+// Their content isn't Slim, so the parser keeps it as a block, the formatter preserves its
+// indentation and the linter skips it.
+export const EMBEDDED_ENGINES = ['asciidoc', 'coffee', 'css', 'erb', 'javascript', 'less', 'markdown', 'rdoc', 'ruby', 'sass', 'scss', 'textile'];
+
+// e.g. `markdown:` or `javascript defer=true:`
+const EMBEDDED_ENGINE_LINE = new RegExp(`^(${EMBEDDED_ENGINES.join('|')})(\\s.*)?:$`);
+
 const TOKEN_MAP = {
+    ...Object.fromEntries(EMBEDDED_ENGINES.flatMap(engine => [[engine, 'macro'], [`${engine}-block`, 'text']])),
     'attribute-name': 'property',
     'attribute-value': 'struct',
     'boolean-attribute': 'boolean-attribute',
     'class': 'class',
     'comment': 'comment',
     'comment-block': 'comment',
-    'css': 'macro',
-    'css-block': 'text',
     'doctype': 'doctype',
     'id': 'parameter',
-    'javascript': 'macro',
-    'javascript-block': 'text',
     'label': 'label',
     'logic': 'punctuation',
     'namespace': 'namespace',
     'scss': 'namespace',
-    'scss-block': 'text',
     'operator': 'operator',
-    'ruby': 'macro',
     'ruby-block': 'variable',
     'tag': 'function',
     'text': 'text',
     'variable': 'variable',
 };
-const PRESERVE_BLOCK_TYPES = ['comment', 'javascript', 'css', 'scss', 'ruby'];
+const PRESERVE_BLOCK_TYPES = ['comment', ...EMBEDDED_ENGINES];
 
 export class SlimNode {
     public id: string | null;
@@ -70,23 +74,9 @@ export class SlimNode {
             return;
         }
 
-        if (trimmed == 'javascript:') {
-            this.type = "javascript";
-            return;
-        }
-
-        if (trimmed == 'css:') {
-            this.type = "css";
-            return;
-        }
-
-        if (trimmed == 'scss:') {
-            this.type = "scss";
-            return;
-        }
-
-        if (trimmed == 'ruby:') {
-            this.type = "ruby";
+        const engineMatch = trimmed.match(EMBEDDED_ENGINE_LINE);
+        if (engineMatch) {
+            this.type = engineMatch[1];
             return;
         }
 
