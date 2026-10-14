@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.10] - 2026-10-14
+
+### Added
+- Format Selection for Slim files, which the README already advertised. It formats the selected lines and everything nested in them, indenting them relative to the line they're nested in, so formatting part of a file never changes its structure. `editor.formatOnPaste` uses it too (#53)
+- Auto-indent on Enter after lines that open a block: Ruby control flow (`- if`, `- elsif`, `- else`, `- unless`, `- case`, `- when`, `- while`, `- until`, `- for`, `- begin`, `- rescue`, `- ensure`), `-` and `=` lines ending in `do` or `do |…|`, and embedded engine lines such as `javascript:` and `markdown:` (#53, #59)
+
 ## [0.4.9] - 2026-10-14
 
 ### Fixed

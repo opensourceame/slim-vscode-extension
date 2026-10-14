@@ -22,6 +22,20 @@
         ["\"", "\""],
         ["'", "'"]
     ],
+    "onEnterRules": [
+        {
+            "beforeText": "^\\s*-\\s*(if|unless|elsif|else|case|when|while|until|for|begin|rescue|ensure)\\b.*$",
+            "action": { "indent": "indent" }
+        },
+        {
+            "beforeText": "^\\s*[-=].*\\bdo\\s*(\\|[^|]*\\|)?\\s*$",
+            "action": { "indent": "indent" }
+        },
+        {
+            "beforeText": "^\\s*(asciidoc|coffee|css|erb|javascript|less|markdown|rdoc|ruby|sass|scss|textile)(\\s.*)?:\\s*$",
+            "action": { "indent": "indent" }
+        }
+    ],
     "embeddedLanguages": {
         "ruby": "ruby",
         "javascript": "javascript",
