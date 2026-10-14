@@ -37,7 +37,7 @@ A comprehensive VS Code extension that provides syntax highlighting, formatting 
 - **Indentation Checking**: Ensures consistent indentation throughout your templates
 - **Duplicate ID Detection**: Warns about duplicate IDs within the same document
 - **Ruby Syntax Validation**: Basic validation of embedded Ruby code syntax
-- **Smart Block Detection**: Automatically skips linting for non-Slim blocks (CSS, JavaScript, SCSS, Ruby, comments)
+- **Smart Block Detection**: Automatically skips linting for comments and embedded engine blocks (`javascript:`, `css:`, `sass:`, `scss:`, `less:`, `coffee:`, `ruby:`, `markdown:`, `erb:`, `textile:`, `rdoc:`, `asciidoc:`)
 
 ## Installation
 

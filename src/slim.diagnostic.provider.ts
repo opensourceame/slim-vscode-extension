@@ -20,9 +20,6 @@ export class SlimDiagnosticProvider {
     private diagnosticCollection: vscode.DiagnosticCollection;
     private rules: SlimDiagnosticRule[];
 
-    // Block types that should not be linted with Slim syntax rules
-    private readonly NON_SLIM_BLOCK_TYPES = ['comment', 'javascript', 'css', 'scss', 'ruby', 'comment-block', 'javascript-block', 'css-block', 'scss-block', 'ruby-block', 'logic'];
-
     constructor() {
         this.diagnosticCollection = vscode.languages.createDiagnosticCollection('slim');
         this.rules = this.initializeRules();
@@ -179,9 +176,9 @@ export class SlimDiagnosticProvider {
         }
 
         // Check for malformed tag syntax
-        if (line.match(/^[^a-zA-Z#.\[\s-=\/|]/)) {
+        if (line.match(/^[^a-zA-Z#.\[\s\-=\/|'<*]/)) {
             return {
-                message: 'Invalid syntax. Lines must start with a tag name, #id, .class, [attributes], -, =, /, or |.',
+                message: "Invalid syntax. Lines must start with a tag name, #id, .class, [attributes], *, -, =, /, |, ' or <.",
                 range: this.getNodeRange(node, document),
                 severity: vscode.DiagnosticSeverity.Error,
                 code: 'invalid-tag-syntax',
@@ -435,8 +432,10 @@ export class SlimDiagnosticProvider {
         return new vscode.Range(lineIndex, startChar, lineIndex, line.text.length);
     }
 
+    // Comments, embedded engine blocks (javascript:, markdown:, ...) and Ruby logic lines
+    // should not be linted with Slim syntax rules
     private isNonSlimBlock(node: SlimNode): boolean {
-        return this.NON_SLIM_BLOCK_TYPES.includes(node.type);
+        return node.isBlockParentNode() || node.isBlockNode() || node.type === 'logic';
     }
 
     private shouldApplyRule(ruleName: string, config: vscode.WorkspaceConfiguration): boolean {

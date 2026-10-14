@@ -28,4 +28,24 @@ describe("Node", () => {
         const node = new SlimNode("tag");
         expect(node.indentation).to.equal(0);
     });
+
+    it("should treat embedded engine lines as blocks", () => {
+        for (const line of ["markdown:", "sass:", "less:", "coffee:", "erb:", "textile:", "rdoc:", "javascript defer=true:"]) {
+            const node = new SlimNode(line);
+            expect(node.isBlockParentNode(), line).to.equal(true);
+        }
+    });
+
+    it("should mark the content of embedded engine blocks as non-Slim", () => {
+        const parent = new SlimNode("markdown:");
+        const child = new SlimNode("  * item one");
+        parent.addChild(child);
+        expect(child.type).to.equal("markdown-block");
+        expect(child.isBlockNode()).to.equal(true);
+    });
+
+    it("should not treat tags as embedded engine lines", () => {
+        expect(new SlimNode("p markdown: is great").isBlockParentNode()).to.equal(false);
+        expect(new SlimNode("markdown-editor").isBlockParentNode()).to.equal(false);
+    });
 });

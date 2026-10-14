@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.9] - 2026-10-14
+
+### Fixed
+- The linter no longer reports "Invalid syntax" on valid Slim: lines starting with `'` (text with trailing whitespace), `<` (inline HTML) and `*` (splat attributes / dynamic tags) are now accepted (#55)
+- The contents of all Slim embedded engines are now treated as non-Slim blocks, so the linter skips them, the formatter preserves their indentation and the outline lists them under Blocks. Previously only `javascript:`, `css:`, `scss:` and `ruby:` were recognised, and the contents of `markdown:`, `sass:`, `less:`, `coffee:`, `erb:`, `textile:`, `rdoc:` and `asciidoc:` blocks were linted and reformatted as Slim markup. Engine lines with attributes, such as `javascript defer=true:`, are recognised too (#55)
+
 ## [0.4.8] - 2026-10-13
 
 ### Removed

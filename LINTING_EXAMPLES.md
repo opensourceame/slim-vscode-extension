@@ -17,7 +17,7 @@ This document provides comprehensive examples of the syntax errors and warnings 
 @invalid-start This is not valid Slim syntax
 $also-invalid Another invalid start
 ```
-**Message**: `Invalid syntax. Lines must start with a tag name, #id, .class, [attributes], -, =, or /.`
+**Message**: `Invalid syntax. Lines must start with a tag name, #id, .class, [attributes], *, -, =, /, |, ' or <.`
 
 ### 2. Unclosed Brackets
 
@@ -163,6 +163,20 @@ ruby:
   123invalid syntax here is ignored
   [unclosed brackets are ignored
   Even @invalid characters are fine in comments
+```
+
+### Other Embedded Engines
+The same applies to every Slim embedded engine: `sass:`, `less:`, `coffee:`, `markdown:`, `erb:`, `textile:`, `rdoc:` and `asciidoc:`.
+```slim
+markdown:
+  Some *emphasis*
+  * item one
+
+sass:
+  $c: red
+
+erb:
+  <%= 1 %>
 ```
 
 ## ✅ Valid Examples (No Errors)
