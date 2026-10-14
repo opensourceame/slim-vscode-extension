@@ -16,8 +16,8 @@ A comprehensive VS Code extension that provides syntax highlighting, formatting 
 - **Auto-indentation**: Automatic indentation based on Slim structure
 - **Configurable indentation**: Support for both spaces and tabs
 - **Format on Save**: Option to automatically format files when saving
-- **Range Formatting**: Format specific sections of code
-- **On-type Formatting**: Auto-indent when pressing Enter
+- **Format Selection**: Format just the selected lines and anything nested in them, indented relative to the surrounding code (also used by `editor.formatOnPaste`)
+- **Auto-indent on Enter**: Pressing Enter after a line that opens a block (`- if …`, `- else`, `- case …`, `… do |x|`, `javascript:`, `markdown:` …) indents the next line
 
 ### Code Folding
 - **Intelligent Folding**: Automatic folding ranges based on content structure

@@ -5,7 +5,7 @@ const BOOLEAN_ATTRIBUTES = ['checked', 'selected', 'disabled', 'readonly', 'mult
 
 // Slim embedded engines (https://github.com/slim-template/slim#embedded-engines-markdown-).
 // Their content isn't Slim, so the parser keeps it as a block, the formatter preserves its
-// indentation and the linter skips it.
+// indentation and the linter skips it. Keep in sync with onEnterRules in language-configuration.json.
 export const EMBEDDED_ENGINES = ['asciidoc', 'coffee', 'css', 'erb', 'javascript', 'less', 'markdown', 'rdoc', 'ruby', 'sass', 'scss', 'textile'];
 
 // e.g. `markdown:` or `javascript defer=true:`

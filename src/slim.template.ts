@@ -29,6 +29,70 @@ export class SlimTemplate extends SlimExtensionBase {
         return this.root.render();
     }
 
+    // Format the nodes on lines startLine to endLine (1-based, inclusive) and everything nested
+    // in them, and return the formatted text of each of those lines by line number.
+    //
+    // Lines are indented relative to the unformatted line they're nested in rather than by
+    // absolute depth, so that formatting part of a template can't change its structure when the
+    // surrounding lines use a different indentation than the formatter would.
+    public formatLines(startLine: number, endLine: number): Map<number, string> {
+        const unit = this.useTabs ? "\t" : " ".repeat(this.indentSize);
+        const lines = new Map<number, string>();
+
+        const isSelected = (node: SlimNode) => node.lineNumber >= startLine && node.lineNumber <= endLine;
+        const leadingWhitespace = (node: SlimNode) => node.content.match(/^\s*/)[0];
+        const preservesIndentation = (node: SlimNode) => node.isBlockNode() && this.preserveNonSlimIndentation;
+
+        // Indentation for a selected node whose parent isn't formatted
+        const outerIndent = (node: SlimNode): string => {
+            const parent = node.parent;
+
+            if (preservesIndentation(node)) {
+                return leadingWhitespace(node);
+            }
+
+            const target = parent.isRootNode() ? "" : leadingWhitespace(parent) + unit;
+
+            // Only move the node if its unselected siblings are already there, otherwise it
+            // could end up nested in one of them, or they in it
+            const targetScore = node.indentationScore(target);
+            const fitsSiblings = parent.children.every(sibling => isSelected(sibling) || sibling.indentation === targetScore);
+
+            return fitsSiblings ? target : leadingWhitespace(node);
+        };
+
+        // Indentation for a node whose parent is formatted, mirroring SlimNode.render()
+        const innerIndent = (node: SlimNode, parentIndent: string): string => {
+            if (preservesIndentation(node)) {
+                return parentIndent + " ".repeat(node.indentation - node.parent.indentation);
+            }
+
+            return parentIndent + unit;
+        };
+
+        const format = (node: SlimNode, indent: string) => {
+            lines.set(node.lineNumber, indent + node.line);
+
+            for (const child of node.children) {
+                format(child, innerIndent(child, indent));
+            }
+        };
+
+        const visit = (node: SlimNode) => {
+            for (const child of node.children) {
+                if (isSelected(child)) {
+                    format(child, outerIndent(child));
+                } else {
+                    visit(child);
+                }
+            }
+        };
+
+        visit(this.root);
+
+        return lines;
+    }
+
     public tree() {
         this.root.tree();
     }

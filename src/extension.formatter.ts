@@ -15,6 +15,15 @@ export class SlimExtensionFormatter extends SlimExtensionBase {
             }
         );
 
+        const rangeFormatter = vscode.languages.registerDocumentRangeFormattingEditProvider(
+            { language: 'slim' },
+            {
+                provideDocumentRangeFormattingEdits(document: vscode.TextDocument, range: vscode.Range): vscode.TextEdit[] {
+                    return SlimExtensionFormatter.formatRange(document, range);
+                }
+            }
+        );
+
         const formatOnSave = vscode.workspace.onWillSaveTextDocument(event => {
             if (SlimExtensionFormatter.shouldFormatOnSave(event)) {
                 event.waitUntil(Promise.resolve(SlimExtensionFormatter.formatDocument(event.document)));
@@ -22,6 +31,7 @@ export class SlimExtensionFormatter extends SlimExtensionBase {
         });
 
         context.subscriptions.push(formatter);
+        context.subscriptions.push(rangeFormatter);
         context.subscriptions.push(formatOnSave);
     }
 
@@ -43,6 +53,31 @@ export class SlimExtensionFormatter extends SlimExtensionBase {
         console.log('document formatted: length', rendered.length, 'original length', originalText.length);
 
         return [vscode.TextEdit.replace(fullRange, rendered)];
+    }
+
+    public static formatRange(document: vscode.TextDocument, range: vscode.Range): vscode.TextEdit[] {
+        // A selection that ends at the start of a line doesn't include that line
+        const endLine = range.end.character === 0 && range.end.line > range.start.line ? range.end.line - 1 : range.end.line;
+        const template = new SlimTemplate(document.getText());
+        const formatted = template.formatLines(range.start.line + 1, endLine + 1);
+        const edits: vscode.TextEdit[] = [];
+
+        for (const [lineNumber, text] of formatted) {
+            const line = document.lineAt(lineNumber - 1);
+            if (line.text !== text) {
+                edits.push(vscode.TextEdit.replace(line.range, text));
+            }
+        }
+
+        // Like Format Document, strip whitespace from blank lines
+        for (let i = range.start.line; i <= endLine; i++) {
+            const line = document.lineAt(i);
+            if (line.isEmptyOrWhitespace && line.text !== '') {
+                edits.push(vscode.TextEdit.delete(line.range));
+            }
+        }
+
+        return edits;
     }
 
     private static shouldFormatOnSave(event: vscode.TextDocumentWillSaveEvent): boolean {
