@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { SlimTemplate } from './slim.template';
 import { SlimNode } from './slim.node';
+import { scanRuby } from './slim.ruby';
 
 export interface SlimDiagnosticRule {
     name: string;
@@ -19,6 +20,9 @@ export interface SlimDiagnostic {
 export class SlimDiagnosticProvider {
     private diagnosticCollection: vscode.DiagnosticCollection;
     private rules: SlimDiagnosticRule[];
+
+    // The rules that apply to lines of Ruby code (- and = lines); the others only apply to Slim
+    private readonly RUBY_LINE_RULES = ['inconsistent-indentation', 'invalid-ruby-syntax', 'unclosed-brackets'];
 
     constructor() {
         this.diagnosticCollection = vscode.languages.createDiagnosticCollection('slim');
@@ -101,27 +105,25 @@ export class SlimDiagnosticProvider {
     ): void {
         const config = vscode.workspace.getConfiguration('slim.linting');
 
-        const visitNode = (node: SlimNode) => {
-            // Skip linting for non-Slim blocks and their children
-            if (this.isNonSlimBlock(node)) {
-                // Still track IDs for duplicate detection in non-Slim blocks if they somehow have them
-                if (node.id && config.get('validateIds', true)) {
-                    if (usedIds.has(node.id)) {
-                        const diagnostic = this.createDuplicateIdDiagnostic(node, document);
-                        if (diagnostic) diagnostics.push(diagnostic);
-                    } else {
-                        usedIds.add(node.id);
-                    }
-                }
+        // Lines that continue a line of Ruby code, which are part of its code rather than Slim
+        const continuationLines = new Set<number>();
 
-                // Skip children of non-Slim blocks entirely
-                return;
+        const lintNode = (node: SlimNode, ids: Set<string>) => {
+            const isRuby = this.rubyCode(node.line) !== null;
+
+            if (isRuby) {
+                this.getContinuationLines(node, document).forEach(line => continuationLines.add(line));
             }
 
             // Apply all rules to this node based on configuration
             for (const rule of this.rules) {
                 // Check if this rule should be applied based on configuration
                 if (!this.shouldApplyRule(rule.name, config)) {
+                    continue;
+                }
+
+                // Slim syntax rules don't apply to lines of Ruby code
+                if (isRuby && !this.RUBY_LINE_RULES.includes(rule.name)) {
                     continue;
                 }
 
@@ -139,25 +141,52 @@ export class SlimDiagnosticProvider {
             }
 
             // Track used IDs for duplicate detection (if enabled)
-            if (node.id && config.get('validateIds', true)) {
-                if (usedIds.has(node.id)) {
+            if (node.id && !isRuby && config.get('validateIds', true)) {
+                if (ids.has(node.id)) {
                     const diagnostic = this.createDuplicateIdDiagnostic(node, document);
                     if (diagnostic) diagnostics.push(diagnostic);
                 } else {
-                    usedIds.add(node.id);
+                    ids.add(node.id);
                 }
             }
+        };
 
-            // Recursively check children
-            for (const child of node.children) {
-                visitNode(child);
+        const visitNode = (node: SlimNode, ids: Set<string>) => {
+            // Comments and embedded engine blocks (javascript:, markdown:, ...) aren't Slim
+            if (node.isBlockParentNode() || node.isBlockNode()) {
+                return;
+            }
+
+            if (!continuationLines.has(node.lineNumber)) {
+                lintNode(node, ids);
+            }
+
+            // The lines nested in a line of Ruby code (- if, = form_with ... do) are Slim
+            visitChildren(node.children, ids);
+        };
+
+        const visitChildren = (children: SlimNode[], ids: Set<string>) => {
+            // Only one branch of an if, unless or case renders, so each branch is checked for
+            // duplicate IDs against the IDs before the conditional rather than the other branches
+            let idsBeforeConditional: Set<string> | null = null;
+
+            for (const child of children) {
+                const code = child.line.startsWith('-') ? this.rubyCode(child.line) : null;
+
+                if (idsBeforeConditional && code !== null && /^(elsif|else|when|in)\b/.test(code)) {
+                    const branchIds = new Set(idsBeforeConditional);
+                    visitNode(child, branchIds);
+                    branchIds.forEach(id => ids.add(id));
+                    continue;
+                }
+
+                idsBeforeConditional = code !== null && /^(if|unless|case)\b/.test(code) ? new Set(ids) : null;
+                visitNode(child, ids);
             }
         };
 
         if (template.root && template.root.children) {
-            for (const child of template.root.children) {
-                visitNode(child);
-            }
+            visitChildren(template.root.children, usedIds);
         }
     }
 
@@ -190,6 +219,22 @@ export class SlimDiagnosticProvider {
     }
 
     private checkUnclosedBrackets(node: SlimNode, document: vscode.TextDocument): SlimDiagnostic | null {
+        const rubyCode = this.getRubyCode(node, document);
+        if (rubyCode !== null) {
+            // An unclosed string hides the brackets after it, and invalid-ruby-syntax reports it
+            const { quote, bracket } = scanRuby(rubyCode);
+            if (quote || !bracket) return null;
+
+            const name = { '(': 'parentheses', '[': 'square brackets', '{': 'curly braces' }[bracket];
+            return {
+                message: `Unclosed ${name}.`,
+                range: this.getNodeRange(node, document),
+                severity: vscode.DiagnosticSeverity.Error,
+                code: 'unclosed-brackets',
+                source: 'slim'
+            };
+        }
+
         const line = node.line;
         let openBrackets = 0;
         let openParens = 0;
@@ -378,51 +423,66 @@ export class SlimDiagnosticProvider {
     }
 
     private checkInvalidRubySyntax(node: SlimNode, document: vscode.TextDocument): SlimDiagnostic | null {
-        if (node.type !== 'logic') return null;
+        const code = this.rubyCode(node.line);
+        if (code === null) return null;
 
-        const line = node.line.trim();
+        // Slim closes Ruby blocks by indentation and rejects an explicit end
+        if (node.line.startsWith('-') && /^end\b/.test(code)) {
+            return {
+                message: "Explicit 'end' is not allowed. Slim closes Ruby blocks by indentation.",
+                range: this.getNodeRange(node, document),
+                severity: vscode.DiagnosticSeverity.Error,
+                code: 'invalid-ruby-syntax',
+                source: 'slim'
+            };
+        }
 
-        // Basic Ruby syntax checks for common errors
-        if (line.startsWith('= ') || line.startsWith('- ')) {
-            const rubyCode = line.substring(2).trim();
+        const { quote } = scanRuby(this.getRubyCode(node, document));
 
-            // Check for unmatched quotes
-            const singleQuotes = (rubyCode.match(/'/g) || []).length;
-            const doubleQuotes = (rubyCode.match(/"/g) || []).length;
-
-            if (singleQuotes % 2 !== 0) {
-                return {
-                    message: 'Unmatched single quote in Ruby code.',
-                    range: this.getNodeRange(node, document),
-                    severity: vscode.DiagnosticSeverity.Error,
-                    code: 'invalid-ruby-syntax',
-                    source: 'slim'
-                };
-            }
-
-            if (doubleQuotes % 2 !== 0) {
-                return {
-                    message: 'Unmatched double quote in Ruby code.',
-                    range: this.getNodeRange(node, document),
-                    severity: vscode.DiagnosticSeverity.Error,
-                    code: 'invalid-ruby-syntax',
-                    source: 'slim'
-                };
-            }
-
-            // Check for common Ruby syntax errors - look for 'end' as a complete word
-            if (rubyCode.match(/\bend\b/) && !rubyCode.match(/(if|unless|case|begin|def|class|module|while|until|for)\s/)) {
-                return {
-                    message: "Unexpected 'end' keyword without matching block opener.",
-                    range: this.getNodeRange(node, document),
-                    severity: vscode.DiagnosticSeverity.Error,
-                    code: 'invalid-ruby-syntax',
-                    source: 'slim'
-                };
-            }
+        if (quote) {
+            const name = { "'": 'single quote', '"': 'double quote', '`': 'backtick' }[quote];
+            return {
+                message: `Unmatched ${name} in Ruby code.`,
+                range: this.getNodeRange(node, document),
+                severity: vscode.DiagnosticSeverity.Error,
+                code: 'invalid-ruby-syntax',
+                source: 'slim'
+            };
         }
 
         return null;
+    }
+
+    // The Ruby code of a control (-) or output (=, ==, =>, =<) line, or null for other lines
+    private rubyCode(line: string): string | null {
+        const match = line.match(/^(?:-|==?[<>']*)\s*(.*)$/);
+        return match ? match[1] : null;
+    }
+
+    // The Ruby code of a control or output line, including the lines that continue it, or null
+    // for other lines
+    private getRubyCode(node: SlimNode, document: vscode.TextDocument): string | null {
+        const code = this.rubyCode(node.line);
+        if (code === null) return null;
+
+        const continuation = this.getContinuationLines(node, document).map(line => document.lineAt(line - 1).text);
+        return [code, ...continuation].join('\n');
+    }
+
+    // Slim continues a line of Ruby code that ends in , or \ onto the next line. Returns the
+    // 1-based numbers of the lines that continue the node's line.
+    private getContinuationLines(node: SlimNode, document: vscode.TextDocument): number[] {
+        const lines: number[] = [];
+        let text = node.line;
+        let lineNumber = node.lineNumber;
+
+        while (/[,\\]$/.test(text) && lineNumber < document.lineCount) {
+            lineNumber++;
+            lines.push(lineNumber);
+            text = document.lineAt(lineNumber - 1).text.trim();
+        }
+
+        return lines;
     }
 
     private getNodeRange(node: SlimNode, document: vscode.TextDocument): vscode.Range {
@@ -430,12 +490,6 @@ export class SlimDiagnosticProvider {
         const line = document.lineAt(lineIndex);
         const startChar = line.text.length - line.text.trimLeft().length;
         return new vscode.Range(lineIndex, startChar, lineIndex, line.text.length);
-    }
-
-    // Comments, embedded engine blocks (javascript:, markdown:, ...) and Ruby logic lines
-    // should not be linted with Slim syntax rules
-    private isNonSlimBlock(node: SlimNode): boolean {
-        return node.isBlockParentNode() || node.isBlockNode() || node.type === 'logic';
     }
 
     private shouldApplyRule(ruleName: string, config: vscode.WorkspaceConfiguration): boolean {

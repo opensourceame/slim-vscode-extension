@@ -24,23 +24,23 @@ html
     = product.recommend_similar
     = service.extend_subscription
 
-    / These SHOULD trigger "unexpected end" errors:
-    - end
-    = something; end
-    - result = calculate(); end
+    / These should also be fine ("end" as a method name, a symbol or in a string):
+    = t(".end")
+    = range.end
+    = link_to "The end", root_path
 
-    / These should NOT trigger errors (valid Ruby with blocks):
+    / This SHOULD trigger an error: Slim closes blocks by indentation and forbids an explicit end
+    - end
+
+    / These should NOT trigger errors (Slim closes the blocks by indentation):
     - if user_signed_in?
       p = current_user.name
-    - end
 
     - users.each do |user|
       p = user.email
-    - end
 
     - case status
     - when 'active'
       p Active user
     - when 'inactive'
       p Inactive user
-    - end

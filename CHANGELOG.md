@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.11] - 2026-10-14
+
+### Fixed
+- The linter now checks the lines nested in `-` and `=` lines (`- if`, `- each do`, `= form_with ... do`, ...); previously everything nested in them was skipped. IDs in different branches of an `if`, `unless` or `case` don't count as duplicates, since only one branch renders (#69)
+- The Ruby checks on `-` and `=` lines now run; previously they never did. Unmatched quotes and brackets are found with a scanner that understands strings, escapes, `#{}` interpolation and comments, so `t("it's here")` and `t(".end")` no longer count as errors, and a line ending in `,` or `\` is checked together with the lines that continue it, as Slim parses it. The `end` check now only reports a `- end` line, which Slim rejects with "Explicit end statements are forbidden" (#69)
+
 ## [0.4.10] - 2026-10-14
 
 ### Added
